@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp; 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,29 +16,35 @@ import gameon.utils.Conexao;
 public class UsuarioDAO {
     final String NOMEDATABELA = "usuario";
     
-    public boolean inserir(Usuario usuario) {
+    public int inserir(Usuario usuario) {
         try {
             Connection conn = Conexao.conectar();
-            String sql = "INSERT INTO " + NOMEDATABELA + " (nome, email, senha, criadoEm) VALUES (?, ?, ?, ?);";
-            PreparedStatement ps = conn.prepareStatement(sql);
+            String sql = "INSERT INTO " + NOMEDATABELA + " (nome, email, senha) VALUES (?, ?, ?);";
+            PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setString(1, usuario.getNome());
             ps.setString(2, usuario.getEmail());
             ps.setString(3, usuario.getSenha()); 
             
-            // Convertendo LocalDateTime para Timestamp
-            if (usuario.getCriadoEm() != null) {
-                ps.setTimestamp(4, Timestamp.valueOf(usuario.getCriadoEm()));
-            } else {
-                // Se for null, usa a data/hora atual
-                ps.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
-            }
             ps.executeUpdate();
+            
+            ResultSet rs = ps.getGeneratedKeys();
+            
+            int usuarioId = 0;
+            if (rs.next()) {
+            	usuarioId = rs.getInt(1);
+            }
+            
+            if (usuarioId == 0) {
+            	return 0;
+            }
+            
             ps.close();
             conn.close();
-            return true;
+            
+            return usuarioId;
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return 0;
         }
     }
     

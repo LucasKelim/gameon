@@ -9,6 +9,11 @@ public class ClienteBO {
 	
 	public boolean inserir(Cliente cliente) {
 		if (!existe(cliente)) {
+			UsuarioBO usuarioBO = new UsuarioBO();
+			
+			int usuarioId = usuarioBO.inserir(cliente);
+			cliente.setId(usuarioId);
+			
 			ClienteDAO clienteDAO = new ClienteDAO();
 			
 			return clienteDAO.inserir(cliente);

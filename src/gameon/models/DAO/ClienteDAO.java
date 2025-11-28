@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import gameon.models.DTO.Cliente;
@@ -19,34 +18,9 @@ public class ClienteDAO {
         try {
             Connection conn = Conexao.conectar();
             
-            // Primeiro insere na tabela usuario (dados da classe pai)
-            String sqlUsuario = "INSERT INTO usuario (nome, email, senha, criadoEm) VALUES (?, ?, ?, ?);";
-            PreparedStatement psUsuario = conn.prepareStatement(sqlUsuario, PreparedStatement.RETURN_GENERATED_KEYS);
-            psUsuario.setString(1, cliente.getNome());
-            psUsuario.setString(2, cliente.getEmail().toString());
-            psUsuario.setString(3, cliente.getSenha());
-            
-            if (cliente.getCriadoEm() != null) {
-                psUsuario.setTimestamp(4, Timestamp.valueOf(cliente.getCriadoEm()));
-            } else {
-                psUsuario.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
-            }
-            
-            psUsuario.executeUpdate();
-            
-            // Pega o ID gerado para o usuário
-            ResultSet rs = psUsuario.getGeneratedKeys();
-            int usuarioId = 0;
-            if (rs.next()) {
-                usuarioId = rs.getInt(1);
-            }
-            rs.close();
-            psUsuario.close();
-            
-            // Insere na tabela cliente
             String sqlCliente = "INSERT INTO " + NOMEDATABELA + " (id, cpf, telefone, asaasCliente) VALUES (?, ?, ?, ?);";
             PreparedStatement psCliente = conn.prepareStatement(sqlCliente);
-            psCliente.setInt(1, usuarioId);
+            psCliente.setInt(1, cliente.getId());
             psCliente.setString(2, cliente.getCpf());
             psCliente.setString(3, cliente.getTelefone());
             psCliente.setString(4, cliente.getAsaasCliente());

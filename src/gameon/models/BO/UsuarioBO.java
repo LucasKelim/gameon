@@ -7,14 +7,14 @@ import gameon.models.DTO.Usuario;
 
 public class UsuarioBO {
 	
-	public boolean inserir(Usuario usuario) {
+	public int inserir(Usuario usuario) {
 		if (!existe(usuario)) {
 			UsuarioDAO usuarioDAO = new UsuarioDAO();
 			
 			return usuarioDAO.inserir(usuario);
 		}
 		
-		return false;
+		return 0;
 	}
 	
 	public boolean alterar(Usuario usuario) {
