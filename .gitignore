@@ -97,6 +97,6 @@ replay_pid*
 config.properties
 
 # DataBase lib
-lib/
+!lib/
 
 # End of https://www.toptal.com/developers/gitignore/api/java,eclipse
