@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import gameon.models.DTO.Produto;
-import Conexao.Conexao;
+import gameon.utils.Conexao;
 
 public class ProdutoDAO {
 
