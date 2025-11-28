@@ -81,7 +81,7 @@ local.properties
 .mtj.tmp/
 
 # Package Files #
-*.jar
+# *.jar
 *.war
 *.nar
 *.ear
@@ -95,8 +95,5 @@ replay_pid*
 
 # Enviroment File
 config.properties
-
-# DataBase lib
-!lib/
 
 # End of https://www.toptal.com/developers/gitignore/api/java,eclipse
