@@ -132,7 +132,7 @@ public class ClienteDAO {
         }
     }
     
-    public Cliente procurarPorId(int id) {
+    public Cliente procurarPorId(Cliente cliente) {
         try {
             Connection conn = Conexao.conectar();
             String sql = "SELECT u.*, c.cpf, c.telefone, c.asaasCliente " +
@@ -140,7 +140,7 @@ public class ClienteDAO {
                         "INNER JOIN cliente c ON u.id = c.id " +
                         "WHERE u.id = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, id);
+            ps.setInt(1, cliente.getId());
             ResultSet rs = ps.executeQuery();
             
             if (rs.next()) {
@@ -161,7 +161,7 @@ public class ClienteDAO {
         }
     }
     
-    public Cliente procurarPorCpf(String cpf) {
+    public Cliente procurarPorCpf(Cliente cliente) {
         try {
             Connection conn = Conexao.conectar();
             String sql = "SELECT u.*, c.cpf, c.telefone, c.asaasCliente " +
@@ -169,7 +169,7 @@ public class ClienteDAO {
                         "INNER JOIN cliente c ON u.id = c.id " +
                         "WHERE c.cpf = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, cpf);
+            ps.setString(1, cliente.getCpf());
             ResultSet rs = ps.executeQuery();
             
             if (rs.next()) {
@@ -190,7 +190,7 @@ public class ClienteDAO {
         }
     }
     
-    public Cliente procurarPorEmail(String email) {
+    public Cliente procurarPorEmail(Cliente cliente) {
         try {
             Connection conn = Conexao.conectar();
             String sql = "SELECT u.*, c.cpf, c.telefone, c.asaasCliente " +
@@ -198,7 +198,7 @@ public class ClienteDAO {
                         "INNER JOIN cliente c ON u.id = c.id " +
                         "WHERE u.email = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, email);
+            ps.setString(1, cliente.getEmail());
             ResultSet rs = ps.executeQuery();
             
             if (rs.next()) {
@@ -219,7 +219,7 @@ public class ClienteDAO {
         }
     }
     
-    public Cliente procurarPorAsaasId(String asaasId) {
+    public Cliente procurarPorAsaasId(Cliente cliente) {
         try {
             Connection conn = Conexao.conectar();
             String sql = "SELECT u.*, c.cpf, c.telefone, c.asaasCliente " +
@@ -227,7 +227,7 @@ public class ClienteDAO {
                         "INNER JOIN cliente c ON u.id = c.id " +
                         "WHERE c.asaasCliente = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, asaasId);
+            ps.setString(1, cliente.getAsaasCliente());
             ResultSet rs = ps.executeQuery();
             
             if (rs.next()) {
