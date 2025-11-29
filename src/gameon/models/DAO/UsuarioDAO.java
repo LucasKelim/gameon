@@ -40,7 +40,7 @@ public class UsuarioDAO {
             ps.close();
             conn.close();
             
-            return procurarPorId(usuario);
+            return procurarPorId(usuario.getId());
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -64,7 +64,7 @@ public class UsuarioDAO {
             ps.close();
             conn.close();
             
-            return procurarPorId(usuario);
+            return procurarPorId(usuario.getId());
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -92,17 +92,18 @@ public class UsuarioDAO {
         }
     }
     
-    public Usuario procurarPorId(Usuario usuario) { 
+    public Usuario procurarPorId(int usuarioId) { 
     	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ?;";
     	
         try {
             Connection conn = Conexao.conectar();
             PreparedStatement ps = conn.prepareStatement(sql);
             
-            ps.setInt(1, usuario.getId());
+            ps.setInt(1, usuarioId);
             
             ResultSet rs = ps.executeQuery();
             
+            Usuario usuario = null;
             if (rs.next()) {
             	usuario = montarUsuario(rs);
             }
@@ -193,7 +194,7 @@ public class UsuarioDAO {
     
     private Usuario montarUsuario(ResultSet rs) {
         try {
-            Usuario usuario = new Usuario();
+            Usuario usuario = new Usuario() {};
             
             Email email = new Email(rs.getString("email"));
             Senha senha = new Senha(rs.getString("senha"));

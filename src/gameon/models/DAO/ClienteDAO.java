@@ -3,12 +3,9 @@ package gameon.models.DAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import gameon.models.DTO.Cliente;
-import gameon.models.valuesobjects.Email;
-import gameon.models.valuesobjects.Senha;
 import gameon.utils.Conexao;
 
 public class ClienteDAO {
@@ -35,7 +32,7 @@ public class ClienteDAO {
             ps.close();
             conn.close();
             
-            return procurarPorId(cliente);
+            return procurarPorId(cliente.getId());
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -48,6 +45,7 @@ public class ClienteDAO {
         try {
             Connection conn = Conexao.conectar();    
             PreparedStatement ps = conn.prepareStatement(sql);
+            
             ps.setString(1, cliente.getCpf());
             ps.setString(2, cliente.getTelefone());
             ps.setString(3, cliente.getAsaasCliente());
@@ -58,7 +56,7 @@ public class ClienteDAO {
             ps.close();
             conn.close();
             
-            return procurarPorId(cliente);
+            return procurarPorId(cliente.getId());
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -101,17 +99,18 @@ public class ClienteDAO {
         }
     }
     
-    public Cliente procurarPorId(Cliente cliente) {
+    public Cliente procurarPorId(int clienteId) {
     	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ?";
     	
         try {
             Connection conn = Conexao.conectar();
             PreparedStatement ps = conn.prepareStatement(sql);
             
-            ps.setInt(1, cliente.getId());
+            ps.setInt(1, clienteId);
             
             ResultSet rs = ps.executeQuery();
             
+            Cliente cliente = null;
             if (rs.next()) {
             	cliente = montarCliente(rs);
             }

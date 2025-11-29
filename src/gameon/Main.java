@@ -12,13 +12,13 @@ public class Main {
 		ClienteBO clienteBO = new ClienteBO();
 		Cliente cliente = new Cliente();
 		cliente.setNome("Lucas");
-		Email email = new Email("lucas@gmail.com"); 
+		Email email = new Email("lucas1@gmail.com"); 
 		cliente.setEmail(email);
-		cliente.setCpf("105.712.719-10");
-		cliente.setAsaasCliente("cus_123");
+		cliente.setCpf("105.712.719-11");
+		cliente.setAsaasCliente("cus_124");
 		Senha senha = new Senha("12345678");
 		cliente.setSenha(senha);
-		cliente.setTelefone("(47) 99117-3919");
+		cliente.setTelefone("(47) 99117-3910");
 		
 		if (clienteBO.inserir(cliente) != null) {
 			System.out.println("Inserido");
@@ -26,7 +26,11 @@ public class Main {
 			System.out.println("Erro ao inserir");
 		}
 		
-		cliente = clienteBO.procurarPorId(cliente);
+		cliente = clienteBO.procurarPorId(cliente.getId());
+		System.out.println(cliente);
+		
+		cliente.setNome("Lucas Kelim");
+		cliente = clienteBO.alterar(cliente);
 		System.out.println(cliente);
 	}
 

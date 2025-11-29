@@ -28,8 +28,12 @@ public class ClienteBO {
 	
 	public Cliente alterar(Cliente cliente) {
 		ClienteDAO clienteDAO = new ClienteDAO();
+		UsuarioDAO usuarioDAO = new UsuarioDAO();
 		
-		return clienteDAO.alterar(cliente);
+		usuarioDAO.alterar(cliente);
+		clienteDAO.alterar(cliente);
+		
+		return procurarPorId(cliente.getId());
 	}
 	
 	public boolean excluir(Cliente cliente) {
@@ -38,14 +42,14 @@ public class ClienteBO {
 		return clienteDAO.excluir(cliente);
 	}
 	
-    public Cliente procurarPorId(Cliente cliente) {
+    public Cliente procurarPorId(int clienteId) {
         ClienteDAO clienteDAO = new ClienteDAO();
         UsuarioDAO usuarioDAO = new UsuarioDAO();
 
-        Cliente cli = clienteDAO.procurarPorId(cliente);
+        Cliente cli = clienteDAO.procurarPorId(clienteId);
         if (cli == null) return null;
 
-        Usuario usuario = usuarioDAO.procurarPorId(cliente);
+        Usuario usuario = usuarioDAO.procurarPorId(clienteId);
         if (usuario == null) return null;
 
         cli.setNome(usuario.getNome());

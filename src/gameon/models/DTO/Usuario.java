@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import gameon.models.valuesobjects.Email;
 import gameon.models.valuesobjects.Senha;
 
-public class Usuario {
+abstract public class Usuario {
 	private int id;
 	private String nome;
 	private Email email;

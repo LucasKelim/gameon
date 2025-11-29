@@ -29,10 +29,10 @@ public class UsuarioBO {
 		return usuarioDAO.excluir(usuario);
 	}
 	
-    public Usuario procurarPorId(Usuario usuario){
+    public Usuario procurarPorId(int usuarioId){
     	UsuarioDAO usuarioDAO = new UsuarioDAO();
     	
-        return usuarioDAO.procurarPorId(usuario);
+        return usuarioDAO.procurarPorId(usuarioId);
     }
     
     public Usuario procurarPorEmail(Usuario usuario){
