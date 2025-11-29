@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="15.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gameon.controllers.CarrinhoController">
+   <children>
+      <HBox alignment="CENTER_LEFT" spacing="15.0">
+         <children>
+            <Button mnemonicParsing="false" onAction="#voltarMenu" text="← Voltar" />
+            <Label text="Carrinho de Compras" style="-fx-font-size: 20; -fx-font-weight: bold;" />
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+         </padding>
+      </HBox>
+
+      <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+         <content>
+            <VBox fx:id="vboxItens" spacing="10.0">
+               <padding>
+                  <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+               </padding>
+            </VBox>
+         </content>
+      </ScrollPane>
+
+      <HBox alignment="CENTER_RIGHT" spacing="15.0">
+         <children>
+            <Label fx:id="lblTotal" text="Total: R$ 0,00" style="-fx-font-size: 16; -fx-font-weight: bold;" />
+            <Button mnemonicParsing="false" onAction="#irParaCheckout" prefWidth="150.0" text="Finalizar Compra" style="-fx-font-size: 14;" />
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+         </padding>
+      </HBox>
+   </children>
+</VBox>

@@ -8,19 +8,19 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" spacing="15.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gameon.controllers.LoginController">
+<VBox alignment="CENTER" spacing="15.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gameon.controllers.LoginController">
    <children>
-      <Label text="Game On - Login">
+      <Label text="LOGIN">
          <font>
             <Font size="24.0" />
          </font>
       </Label>
       
-      <TextField fx:id="txtEmail" promptText="Digite seu email" maxWidth="250.0" />
+      <TextField fx:id="txtEmail" maxWidth="250.0" promptText="Digite seu email" />
       
-      <PasswordField fx:id="txtSenha" promptText="Digite sua senha" maxWidth="250.0" />
+      <PasswordField fx:id="txtSenha" maxWidth="250.0" promptText="Digite sua senha" />
       
-      <Button mnemonicParsing="false" onAction="#fazerLogin" text="Entrar" />
+      <Button mnemonicParsing="false" onAction="#fazerLogin" prefWidth="54.0" text="Entrar" />
       
       <Label fx:id="lblMensagem" textFill="#e40e0e" />
    </children>
