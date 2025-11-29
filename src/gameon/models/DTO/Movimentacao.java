@@ -8,6 +8,7 @@ public class Movimentacao {
 	private int id;
 	private TipoMovimentacao movimentacao;
 	private int quantidade;
+	private int produtoId;
 	private Produto produto;
 	private LocalDateTime CriadoEm;
 	
@@ -33,6 +34,14 @@ public class Movimentacao {
 	
 	public void setQuantidade(int quantidade) {
 		this.quantidade = quantidade;
+	}
+	
+	public int getProdutoId() {
+		return produtoId;
+	}
+	
+	public void setProdutoId(int produtoId) {
+		this.produtoId = produtoId;
 	}
 	
 	public Produto getProduto() {

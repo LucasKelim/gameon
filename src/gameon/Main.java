@@ -12,7 +12,7 @@ public class Main {
 		ClienteBO clienteBO = new ClienteBO();
 		Cliente cliente = new Cliente();
 		cliente.setNome("Lucas");
-		Email email = new Email("lucas2@gmail.com"); 
+		Email email = new Email("lucas2@gmail.com");
 		cliente.setEmail(email);
 		cliente.setCpf("105.712.719-10");
 		Senha senha = new Senha("12345678");
