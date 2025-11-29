@@ -5,7 +5,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -14,11 +15,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gameon.utils.Config;
 
 public class AsaasClient {
-	
+
     private final String token = Config.get("ASAAS_SANDBOX_TOKEN");
-    private final String url = Config.get("ASAAS_SANDBOX_URL");
-    
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final String baseUrl = Config.get("ASAAS_SANDBOX_URL");
+    private final String version = Config.get("ASAAS_API_VERSION");
+
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     public Map<String, Object> get(String endpoint) {
         return request("GET", endpoint, null);
@@ -37,52 +39,56 @@ public class AsaasClient {
     }
 
     public Map<String, Object> request(String method, String endpoint, Map<String, Object> data) {
-
         try {
-        	URI uri = URI.create(url + endpoint);
-        	URL apiUrl = uri.toURL();
-
-            HttpURLConnection conn = (HttpURLConnection) apiUrl.openConnection();
+            URI uri = URI.create(baseUrl + "/" + version + "/" + endpoint);
+            HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
 
             conn.setRequestMethod(method);
             conn.setRequestProperty("accept", "application/json");
             conn.setRequestProperty("access_token", token);
-            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             conn.setDoInput(true);
 
             if (data != null) {
                 conn.setDoOutput(true);
                 String json = mapper.writeValueAsString(data);
 
-                OutputStream os = conn.getOutputStream();
-                os.write(json.getBytes());
-                os.flush();
-                os.close();
+                try (OutputStream os = conn.getOutputStream()) {
+                    os.write(json.getBytes(StandardCharsets.UTF_8));
+                }
             }
 
             int responseCode = conn.getResponseCode();
-            BufferedReader reader;
+            boolean success = responseCode >= 200 && responseCode < 300;
 
-            if (responseCode >= 200 && responseCode < 300) {
-                reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            } else {
-                reader = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(
+                            success ? conn.getInputStream() : conn.getErrorStream(),
+                            StandardCharsets.UTF_8
+                    )
+            )) {
+                StringBuilder sb = new StringBuilder();
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+
+                Map<String, Object> responseMap = mapper.readValue(
+                        sb.toString(),
+                        new TypeReference<Map<String, Object>>() {}
+                );
+
+                return responseMap;
             }
 
-            StringBuilder response = new StringBuilder();
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
-            }
-
-            reader.close();
-            conn.disconnect();
-
-            return mapper.readValue(response.toString(), new TypeReference<Map<String, Object>>() {});
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("error", e.getMessage());
+            return error;
         }
     }
 }

@@ -12,13 +12,12 @@ public class Main {
 		ClienteBO clienteBO = new ClienteBO();
 		Cliente cliente = new Cliente();
 		cliente.setNome("Lucas");
-		Email email = new Email("lucas1@gmail.com"); 
+		Email email = new Email("lucas2@gmail.com"); 
 		cliente.setEmail(email);
-		cliente.setCpf("105.712.719-11");
-		cliente.setAsaasCliente("cus_124");
+		cliente.setCpf("105.712.719-10");
 		Senha senha = new Senha("12345678");
 		cliente.setSenha(senha);
-		cliente.setTelefone("(47) 99117-3910");
+		cliente.setTelefone("(47) 99117-3912");
 		
 		if (clienteBO.inserir(cliente) != null) {
 			System.out.println("Inserido");
@@ -26,12 +25,17 @@ public class Main {
 			System.out.println("Erro ao inserir");
 		}
 		
-		cliente = clienteBO.procurarPorId(cliente.getId());
-		System.out.println(cliente);
+		System.out.println(clienteBO.procurarPorId(cliente.getId()));
 		
 		cliente.setNome("Lucas Kelim");
-		cliente = clienteBO.alterar(cliente);
-		System.out.println(cliente);
+		
+		System.out.println(clienteBO.alterar(cliente));
+		
+		if (clienteBO.excluir(cliente)) {
+			System.out.println("Excluido");
+		} else {
+			System.out.println("Erro ao excluir");
+		}
 	}
 
 }

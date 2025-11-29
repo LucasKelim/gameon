@@ -40,7 +40,7 @@ public class ClienteDAO {
     }
     
     public Cliente alterar(Cliente cliente) {
-    	String sql = "UPDATE " + NOMEDATABELA + " SET cpf = ?, telefone = ?, asaasCliente = ? WHERE id = ?;";
+    	String sql = "UPDATE " + NOMEDATABELA + " SET cpf = ?, telefone = ? WHERE id = ?;";
     	
         try {
             Connection conn = Conexao.conectar();    
@@ -64,34 +64,19 @@ public class ClienteDAO {
     }
     
     public boolean excluir(Cliente cliente) {
+    	String sql = "DELETE FROM " + NOMEDATABELA + " WHERE id = ?;";
+    	
         try {
             Connection conn = Conexao.conectar();
+            PreparedStatement ps = conn.prepareStatement(sql);
             
-            String sqlCarrinho = "DELETE FROM carrinho_produto WHERE cliente = ?;";
-            PreparedStatement psCarrinho = conn.prepareStatement(sqlCarrinho);
-            psCarrinho.setInt(1, cliente.getId());
-            psCarrinho.executeUpdate();
-            psCarrinho.close();
+            ps.setInt(1, cliente.getId());
             
-            String sqlEndereco = "DELETE FROM endereco WHERE cliente = ?;";
-            PreparedStatement psEndereco = conn.prepareStatement(sqlEndereco);
-            psEndereco.setInt(1, cliente.getId());
-            psEndereco.executeUpdate();
-            psEndereco.close();
+            ps.executeUpdate();
             
-            String sqlCliente = "DELETE FROM " + NOMEDATABELA + " WHERE id = ?;";
-            PreparedStatement psCliente = conn.prepareStatement(sqlCliente);
-            psCliente.setInt(1, cliente.getId());
-            psCliente.executeUpdate();
-            psCliente.close();
-            
-            String sqlUsuario = "DELETE FROM usuario WHERE id = ?;";
-            PreparedStatement psUsuario = conn.prepareStatement(sqlUsuario);
-            psUsuario.setInt(1, cliente.getId());
-            psUsuario.executeUpdate();
-            psUsuario.close();
-            
+            ps.close();
             conn.close();
+            
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -214,14 +199,15 @@ public class ClienteDAO {
     }
     
     public boolean existe(Cliente cliente) {
-    	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE cpf = ? OR asaasCliente = ?;";
+    	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ? OR cpf = ? OR asaasCliente = ?;";
     	
         try {
             Connection conn = Conexao.conectar();
             PreparedStatement ps = conn.prepareStatement(sql);
             
-            ps.setString(1, cliente.getCpf());
-            ps.setString(2, cliente.getAsaasCliente());
+            ps.setInt(1, cliente.getId());
+            ps.setString(2, cliente.getCpf());
+            ps.setString(3, cliente.getAsaasCliente());
             
             ResultSet rs = ps.executeQuery();
             
