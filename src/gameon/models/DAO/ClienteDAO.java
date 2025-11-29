@@ -227,7 +227,7 @@ public class ClienteDAO {
     }
     
     public List<Cliente> pesquisarTodos() {
-    	String sql = "SELECT * FROM " + NOMEDATABELA;
+    	String sql = "SELECT * FROM " + NOMEDATABELA + ";";
     	
         try {
             Connection conn = Conexao.conectar();
@@ -250,6 +250,7 @@ public class ClienteDAO {
     
     public List<Cliente> montarLista(ResultSet rs) {
         List<Cliente> listObj = new ArrayList<Cliente>();
+        
         try {
             while (rs.next()) {
                 Cliente obj = montarCliente(rs);
