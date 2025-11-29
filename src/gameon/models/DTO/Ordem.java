@@ -12,7 +12,7 @@ public class Ordem {
 	private double valorTotal;
 	private Cliente cliente;
 	private Endereco endereco;
-	private String assasOrdem;
+	private String asaasOrdem;
 	private LocalDateTime criadoEm;
 	
 	public int getId() {
@@ -51,11 +51,11 @@ public class Ordem {
 	public void setEndereco(Endereco endereco) {
 		this.endereco = endereco;
 	}
-	public String getAssasOrdem() {
-		return assasOrdem;
+	public String getAsaasOrdem() {
+		return asaasOrdem;
 	}
-	public void setAssasOrdem(String assasOrdem) {
-		this.assasOrdem = assasOrdem;
+	public void setAsaasOrdem(String assasOrdem) {
+		this.asaasOrdem = assasOrdem;
 	}
 	public LocalDateTime getCriadoEm() {
 		return criadoEm;
@@ -80,7 +80,7 @@ public class Ordem {
 		builder.append(", endereco=");
 		builder.append(endereco);
 		builder.append(", assasOrdem=");
-		builder.append(assasOrdem);
+		builder.append(asaasOrdem);
 		builder.append(", criadoEm=");
 		builder.append(criadoEm);
 		builder.append("]");
