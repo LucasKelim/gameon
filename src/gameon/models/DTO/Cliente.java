@@ -27,13 +27,13 @@ public class Cliente extends Usuario {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("ClienteDTO [cpf=");
+		builder.append("Cliente [cpf=");
 		builder.append(cpf);
 		builder.append(", telefone=");
 		builder.append(telefone);
 		builder.append(", asaasCliente=");
 		builder.append(asaasCliente);
-		builder.append(", toString()=");
+		builder.append(", ");
 		builder.append(super.toString());
 		builder.append("]");
 		return builder.toString();

@@ -14,56 +14,54 @@ import gameon.utils.Conexao;
 public class ClienteDAO {
     final String NOMEDATABELA = "cliente";
     
-    public boolean inserir(Cliente cliente) {
+    public Cliente inserir(Cliente cliente) {
+    	String sql = "INSERT INTO " + NOMEDATABELA + " (id, cpf, telefone, asaasCliente) VALUES (?, ?, ?, ?);";
+    	
         try {
             Connection conn = Conexao.conectar();
+            PreparedStatement ps = conn.prepareStatement(sql);
             
-            String sqlCliente = "INSERT INTO " + NOMEDATABELA + " (id, cpf, telefone, asaasCliente) VALUES (?, ?, ?, ?);";
-            PreparedStatement psCliente = conn.prepareStatement(sqlCliente);
-            psCliente.setInt(1, cliente.getId());
-            psCliente.setString(2, cliente.getCpf());
-            psCliente.setString(3, cliente.getTelefone());
-            psCliente.setString(4, cliente.getAsaasCliente());
-            psCliente.executeUpdate();
+            ps.setInt(1, cliente.getId());
+            ps.setString(2, cliente.getCpf());
+            ps.setString(3, cliente.getTelefone());
+            ps.setString(4, cliente.getAsaasCliente());
             
-            psCliente.close();
+            int rows = ps.executeUpdate();
+            
+            if (rows == 0) {
+            	return null;
+            }
+            
+            ps.close();
             conn.close();
-            return true;
+            
+            return procurarPorId(cliente);
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
     }
     
-    public boolean alterar(Cliente cliente) {
+    public Cliente alterar(Cliente cliente) {
+    	String sql = "UPDATE " + NOMEDATABELA + " SET cpf = ?, telefone = ?, asaasCliente = ? WHERE id = ?;";
+    	
         try {
-            Connection conn = Conexao.conectar();
+            Connection conn = Conexao.conectar();    
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, cliente.getCpf());
+            ps.setString(2, cliente.getTelefone());
+            ps.setString(3, cliente.getAsaasCliente());
+            ps.setInt(4, cliente.getId());
             
-            // Atualiza a tabela usuario
-            String sqlUsuario = "UPDATE usuario SET nome = ?, email = ?, senha = ? WHERE id = ?;";
-            PreparedStatement psUsuario = conn.prepareStatement(sqlUsuario);
-            psUsuario.setString(1, cliente.getNome());
-            psUsuario.setString(2, cliente.getEmail().toString());
-            psUsuario.setString(3, cliente.getSenha());
-            psUsuario.setInt(4, cliente.getId());
-            psUsuario.executeUpdate();
-            psUsuario.close();
+            ps.executeUpdate();
             
-            // Atualiza a tabela cliente
-            String sqlCliente = "UPDATE " + NOMEDATABELA + " SET cpf = ?, telefone = ?, asaasCliente = ? WHERE id = ?;";
-            PreparedStatement psCliente = conn.prepareStatement(sqlCliente);
-            psCliente.setString(1, cliente.getCpf());
-            psCliente.setString(2, cliente.getTelefone());
-            psCliente.setString(3, cliente.getAsaasCliente());
-            psCliente.setInt(4, cliente.getId());
-            psCliente.executeUpdate();
-            psCliente.close();
-            
+            ps.close();
             conn.close();
-            return true;
+            
+            return procurarPorId(cliente);
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
     }
     
@@ -71,7 +69,6 @@ public class ClienteDAO {
         try {
             Connection conn = Conexao.conectar();
             
-            // Primeiro exclui registros relacionados em outras tabelas
             String sqlCarrinho = "DELETE FROM carrinho_produto WHERE cliente = ?;";
             PreparedStatement psCarrinho = conn.prepareStatement(sqlCarrinho);
             psCarrinho.setInt(1, cliente.getId());
@@ -84,14 +81,12 @@ public class ClienteDAO {
             psEndereco.executeUpdate();
             psEndereco.close();
             
-            // Depois exclui da tabela cliente
             String sqlCliente = "DELETE FROM " + NOMEDATABELA + " WHERE id = ?;";
             PreparedStatement psCliente = conn.prepareStatement(sqlCliente);
             psCliente.setInt(1, cliente.getId());
             psCliente.executeUpdate();
             psCliente.close();
             
-            // Finalmente exclui da tabela usuario
             String sqlUsuario = "DELETE FROM usuario WHERE id = ?;";
             PreparedStatement psUsuario = conn.prepareStatement(sqlUsuario);
             psUsuario.setInt(1, cliente.getId());
@@ -107,28 +102,25 @@ public class ClienteDAO {
     }
     
     public Cliente procurarPorId(Cliente cliente) {
+    	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ?";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "SELECT u.*, c.cpf, c.telefone, c.asaasCliente " +
-                        "FROM usuario u " +
-                        "INNER JOIN cliente c ON u.id = c.id " +
-                        "WHERE u.id = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
+            
             ps.setInt(1, cliente.getId());
+            
             ResultSet rs = ps.executeQuery();
             
             if (rs.next()) {
-                Cliente obj = montarCliente(rs);
-                ps.close();
-                rs.close();
-                conn.close();
-                return obj;
-            } else {
-                ps.close();
-                rs.close();
-                conn.close();
-                return null;
+            	cliente = montarCliente(rs);
             }
+            
+            ps.close();
+            rs.close();
+            conn.close();
+            
+            return cliente;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -223,27 +215,31 @@ public class ClienteDAO {
     }
     
     public boolean existe(Cliente cliente) {
+    	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE cpf = ? OR asaasCliente = ?;";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE cpf = ? OR asaasCliente = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
+            
             ps.setString(1, cliente.getCpf());
             ps.setString(2, cliente.getAsaasCliente());
+            
             ResultSet rs = ps.executeQuery();
+            
+            boolean res = false;
             if (rs.next()) {
-                ps.close();
-                rs.close();
-                conn.close();
-                return true;
+                res = true;
             }
+            
             ps.close();
             rs.close();
             conn.close();
+            
+            return res;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
-        return false;
     }
     
     public List<Cliente> pesquisarTodos() {
@@ -280,27 +276,11 @@ public class ClienteDAO {
         }
     }
     
-    // Método auxiliar para montar um Cliente a partir do ResultSet
     private Cliente montarCliente(ResultSet rs) {
         try {
             Cliente cliente = new Cliente();
             
-            // Dados da classe Usuario (pai)
             cliente.setId(rs.getInt("id"));
-            cliente.setNome(rs.getString("nome"));
-            
-            Email email = new Email(rs.getString("email"));
-            cliente.setEmail(email);
-            
-            Senha senha = new Senha(rs.getString("senha"));
-            cliente.setSenha(senha);
-            
-            Timestamp timestamp = rs.getTimestamp("criadoEm");
-            if (timestamp != null) {
-                cliente.setCriadoEm(timestamp.toLocalDateTime());
-            }
-            
-            // Dados específicos da classe Cliente (filho)
             cliente.setCpf(rs.getString("cpf"));
             cliente.setTelefone(rs.getString("telefone"));
             cliente.setAsaasCliente(rs.getString("asaasCliente"));
