@@ -48,8 +48,7 @@ public class ClienteDAO {
             
             ps.setString(1, cliente.getCpf());
             ps.setString(2, cliente.getTelefone());
-            ps.setString(3, cliente.getAsaasCliente());
-            ps.setInt(4, cliente.getId());
+            ps.setInt(3, cliente.getId());
             
             ps.executeUpdate();
             
@@ -140,7 +139,7 @@ public class ClienteDAO {
         }
     }
     
-    public Cliente procurarPorEmail(Cliente cliente) {
+    public Cliente procurarPorEmail(String email) {
         try {
             Connection conn = Conexao.conectar();
             String sql = "SELECT u.*, c.cpf, c.telefone, c.asaasCliente " +
@@ -148,7 +147,7 @@ public class ClienteDAO {
                         "INNER JOIN cliente c ON u.id = c.id " +
                         "WHERE u.email = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, cliente.getEmail());
+            ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
             
             if (rs.next()) {
@@ -228,18 +227,20 @@ public class ClienteDAO {
     }
     
     public List<Cliente> pesquisarTodos() {
+    	String sql = "SELECT * FROM " + NOMEDATABELA;
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "SELECT u.*, c.cpf, c.telefone, c.asaasCliente " +
-                        "FROM usuario u " +
-                        "INNER JOIN cliente c ON u.id = c.id " +
-                        "ORDER BY u.criadoEm DESC;";
             PreparedStatement ps = conn.prepareStatement(sql);
+            
             ResultSet rs = ps.executeQuery();
+            
             List<Cliente> listObj = montarLista(rs);
+            
             ps.close();
             rs.close();
             conn.close();
+            
             return listObj;
         } catch (Exception e) {
             e.printStackTrace();

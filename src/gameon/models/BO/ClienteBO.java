@@ -61,8 +61,13 @@ public class ClienteBO {
         }
         
 		ClienteDAO clienteDAO = new ClienteDAO();
+		UsuarioDAO usuarioDAO = new UsuarioDAO();
 		
-		return clienteDAO.excluir(cliente);
+		if (clienteDAO.excluir(cliente)) {
+			return usuarioDAO.excluir(cliente);
+		}
+		
+		return false;
 	}
 	
     public Cliente procurarPorId(int clienteId) {
@@ -83,10 +88,16 @@ public class ClienteBO {
         return cli;
     }
     
-    public Cliente procurarPorEmail(Cliente cliente){
-    	ClienteDAO clienteDAO = new ClienteDAO();
-    	
-        return clienteDAO.procurarPorEmail(cliente);
+    public Cliente procurarPorEmail(String email){
+        UsuarioDAO usuarioDAO = new UsuarioDAO();
+        
+        Usuario usuario = usuarioDAO.procurarPorEmail(email);
+        if (usuario == null) return null;
+        
+        Cliente cliente = procurarPorId(usuario.getId());
+        if (cliente == null) return null;
+
+        return cliente;
     }
 	
 	public boolean existe(Cliente cliente) {

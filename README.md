@@ -34,7 +34,7 @@ create table usuario (
 
 create table admin (
 	id int unsigned primary key,
-    foreign key (id) references usuario (id) on delete cascade
+    foreign key (id) references usuario (id)
 );
 
 create table produto (
@@ -54,7 +54,7 @@ create table cliente (
     cpf varchar(255) not null unique,
     telefone varchar(255) not null unique,
     asaasCliente varchar(255) not null unique,
-    foreign key (id) references usuario (id) on delete cascade
+    foreign key (id) references usuario (id)
 );
 
 create table endereco (

@@ -35,10 +35,10 @@ public class UsuarioBO {
         return usuarioDAO.procurarPorId(usuarioId);
     }
     
-    public Usuario procurarPorEmail(Usuario usuario){
+    public Usuario procurarPorEmail(String email){
     	UsuarioDAO usuarioDAO = new UsuarioDAO();
     	
-        return usuarioDAO.procurarPorEmail(usuario);
+        return usuarioDAO.procurarPorEmail(email);
     }
 	
 	public boolean existe(Usuario usuario) {

@@ -31,11 +31,14 @@ public class Main {
 		
 		System.out.println(clienteBO.alterar(cliente));
 		
-		if (clienteBO.excluir(cliente)) {
-			System.out.println("Excluido");
-		} else {
-			System.out.println("Erro ao excluir");
-		}
+		
+//		if (clienteBO.excluir(cliente)) {
+//			System.out.println("Excluido");
+//		} else {
+//			System.out.println("Erro ao excluir");
+//		}
+		
+		System.out.println(clienteBO.procurarPorEmail("lucas2@gmail.com"));
 	}
 
 }

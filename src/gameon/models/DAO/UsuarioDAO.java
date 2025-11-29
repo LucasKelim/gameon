@@ -119,12 +119,12 @@ public class UsuarioDAO {
         }
     }
     
-    public Usuario procurarPorEmail(Usuario usuario) { 
+    public Usuario procurarPorEmail(String email) { 
         try {
             Connection conn = Conexao.conectar();
             String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE email = ?;"; 
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, usuario.getEmail());
+            ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 Usuario obj = montarUsuario(rs); 
