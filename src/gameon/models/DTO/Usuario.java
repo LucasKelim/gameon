@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import gameon.models.valuesobjects.Email;
 import gameon.models.valuesobjects.Senha;
 
-abstract public class Usuario {
+public class Usuario {
 	private int id;
 	private String nome;
 	private Email email;
@@ -46,18 +46,16 @@ abstract public class Usuario {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("UsuarioDTO [id=");
+		builder.append("Usuario [id=");
 		builder.append(id);
 		builder.append(", nome=");
 		builder.append(nome);
 		builder.append(", email=");
-		builder.append(email);
+		builder.append(email.getEmail());
 		builder.append(", senha=");
-		builder.append(senha);
+		builder.append(senha.getSenha());
 		builder.append(", criadoEm=");
 		builder.append(criadoEm);
-		builder.append(", toString()=");
-		builder.append(super.toString());
 		builder.append("]");
 		return builder.toString();
 	}
