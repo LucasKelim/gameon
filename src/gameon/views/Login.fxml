@@ -8,23 +8,27 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" spacing="15.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gameon.controllers.LoginController">
-   <children>
-      <Label text="LOGIN">
-         <font>
-            <Font size="24.0" />
-         </font>
-      </Label>
-      
-      <TextField fx:id="txtEmail" maxWidth="250.0" promptText="Digite seu email" />
-      
-      <PasswordField fx:id="txtSenha" maxWidth="250.0" promptText="Digite sua senha" />
-      
-      <Button mnemonicParsing="false" onAction="#fazerLogin" prefWidth="54.0" text="Entrar" />
-      
-      <Label fx:id="lblMensagem" textFill="#e40e0e" />
-   </children>
-   <padding>
-      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-   </padding>
+<VBox alignment="CENTER" spacing="15.0"
+      xmlns="http://javafx.com/javafx/25"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="gameon.controllers.LoginController">
+
+    <children>
+        <Label text="LOGIN">
+            <font><Font size="24.0"/></font>
+        </Label>
+
+        <TextField fx:id="txtEmail" maxWidth="250" promptText="Digite seu email"/>
+        <PasswordField fx:id="txtSenha" maxWidth="250" promptText="Digite sua senha"/>
+
+        <Button text="Entrar" onAction="#fazerLogin" prefWidth="200"/>
+
+        <Button text="Criar conta" onAction="#irParaCadastro" prefWidth="200"/>
+
+        <Label fx:id="lblMensagem" textFill="#e40e0e"/>
+    </children>
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
 </VBox>

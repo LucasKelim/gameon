@@ -11,6 +11,15 @@ public class Endereco {
 	private String estado;
 	private String cidade;
 	private Cliente cliente;
+	private String bairro;
+	
+	public String getBairro() {
+		return bairro;
+	}
+	public void setBairro(String bairro) {
+		this.bairro = bairro;
+	}
+
 	private LocalDateTime criadoEm;
 	
 	public int getId() {

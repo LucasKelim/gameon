@@ -85,9 +85,9 @@ public class EnderecoDAO {
                 obj.setId(rs.getInt(1));
                 obj.setLogradouro(rs.getString(2));
                 obj.setNumero(rs.getInt(3));
-//                obj.setBairro(rs.getString(4));
-//                obj.setCidade(rs.getString(5));
-//                obj.getCodigoPostal(rs.getString(6));
+                obj.setBairro(rs.getString(4));
+                obj.setCidade(rs.getString(5));
+                obj.setCodigoPostal(rs.getString(6));
                 obj.setEstado(rs.getString(7));
                 // clienteId será carregado separadamente se necessário
                 obj.setCriadoEm(rs.getTimestamp(9).toLocalDateTime());
