@@ -12,6 +12,7 @@ public class Endereco {
 	private String estado;
 	private String cidade;
 	private Cliente cliente;
+
 	private LocalDateTime criadoEm;
 	
 	public int getId() {
@@ -99,7 +100,4 @@ public class Endereco {
 		builder.append("]");
 		return builder.toString();
 	}
-	
-	
-	
 }

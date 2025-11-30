@@ -27,17 +27,17 @@ public class EnderecoDAO {
             ps.setString(5, endereco.getCodigoPostal());
             ps.setString(6, endereco.getEstado());
             ps.setInt(7, endereco.getCliente().getId());
-            
-            int rows = ps.executeUpdate();
+
+        	int rows = ps.executeUpdate();
             
             if (rows == 0) {
             	return null;
             }
             
-        	ResultSet rs = ps.getGeneratedKeys();
+            ResultSet rs = ps.getGeneratedKeys();
             
             if (rs.next()) {
-                endereco.setId(rs.getInt("id"));
+            	endereco.setId(rs.getInt(1));
             }
             
             ps.close();
