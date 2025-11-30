@@ -3,6 +3,7 @@ package gameon.models.DAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import gameon.models.DTO.Endereco;
@@ -12,11 +13,13 @@ public class EnderecoDAO {
 
     final String NOMEDATABELA = "endereco";
     
-    public boolean inserir(Endereco endereco) {
+    public Endereco inserir(Endereco endereco) {
+    	String sql = "INSERT INTO " + NOMEDATABELA + " (logradouro, numero, bairro, cidade, cep, estado, clienteId) VALUES (?, ?, ?, ?, ?, ?, ?);";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "INSERT INTO " + NOMEDATABELA + " (logradouro, numero, bairro, cidade, cep, estado, clienteId) VALUES (?, ?, ?, ?, ?, ?, ?);";
-            PreparedStatement ps = conn.prepareStatement(sql);
+            PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+            
             ps.setString(1, endereco.getLogradouro());
             ps.setInt(2, endereco.getNumero());
             ps.setString(3, endereco.getBairro());
@@ -24,101 +27,99 @@ public class EnderecoDAO {
             ps.setString(5, endereco.getCodigoPostal());
             ps.setString(6, endereco.getEstado());
             ps.setInt(7, endereco.getCliente().getId());
-            ps.executeUpdate();
-            ps.close();
-            conn.close();
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-    
-    public boolean alterar(Endereco endereco) {
-        try {
-            Connection conn = Conexao.conectar();
-            String sql = "UPDATE " + NOMEDATABELA + " SET logradouro = ?, numero = ?, bairro = ?, cidade = ?, cep = ?, estado = ?, clienteId = ? WHERE id = ?;";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, endereco.getLogradouro());
-            ps.setInt(2, endereco.getNumero());
-            ps.setString(3, endereco.getBairro());
-            ps.setString(4, endereco.getCidade());
-            ps.setString(5, endereco.getCodigoPostal());
-            ps.setString(6, endereco.getEstado());
-            ps.setInt(7, endereco.getCliente().getId());
-            ps.setInt(8, endereco.getId());
-            ps.executeUpdate();
-            ps.close();
-            conn.close();
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-    
-    public boolean excluir(Endereco endereco) {
-        try {
-            Connection conn = Conexao.conectar();
-            String sql = "DELETE FROM " + NOMEDATABELA + " WHERE id = ?;";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, endereco.getId());
-            ps.executeUpdate();
-            ps.close();
-            conn.close();
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-    
-    public Endereco procurarPorId(Endereco endereco) {
-        try {
-            Connection conn = Conexao.conectar();
-            String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ?;";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, endereco.getId());
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                Endereco obj = new Endereco();
-                obj.setId(rs.getInt(1));
-                obj.setLogradouro(rs.getString(2));
-                obj.setNumero(rs.getInt(3));
-//                obj.setBairro(rs.getString(4));
-//                obj.setCidade(rs.getString(5));
-//                obj.getCodigoPostal(rs.getString(6));
-                obj.setEstado(rs.getString(7));
-                // clienteId será carregado separadamente se necessário
-                obj.setCriadoEm(rs.getTimestamp(9).toLocalDateTime());
-                ps.close();
-                rs.close();
-                conn.close();
-                return obj;
-            } else {
-                ps.close();
-                rs.close();
-                conn.close();
-                return null;
+            
+            int rows = ps.executeUpdate();
+            
+            if (rows == 0) {
+            	return null;
             }
+            
+        	ResultSet rs = ps.getGeneratedKeys();
+            
+            if (rs.next()) {
+                endereco.setId(rs.getInt("id"));
+            }
+            
+            ps.close();
+            rs.close();
+            conn.close();
+            
+            return procurarPorId(endereco.getId());
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
     
-    public List<Endereco> procurarPorClienteId(int clienteId) {
+    public Endereco alterar(Endereco endereco) {
+    	String sql = "UPDATE " + NOMEDATABELA + " SET logradouro = ?, numero = ?, bairro = ?, cidade = ?, cep = ?, estado = ? WHERE id = ?;";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE clienteId = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, clienteId);
+            
+            ps.setString(1, endereco.getLogradouro());
+            ps.setInt(2, endereco.getNumero());
+            ps.setString(3, endereco.getBairro());
+            ps.setString(4, endereco.getCidade());
+            ps.setString(5, endereco.getCodigoPostal());
+            ps.setString(6, endereco.getEstado());
+            ps.setInt(8, endereco.getId());
+            
+            ps.executeUpdate();
+            
+            ps.close();
+            conn.close();
+            
+            return endereco;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    public boolean excluir(int enderecoId) {
+    	String sql = "DELETE FROM " + NOMEDATABELA + " WHERE id = ?;";
+    	
+        try {
+            Connection conn = Conexao.conectar();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            
+            ps.setInt(1, enderecoId);
+            
+            ps.executeUpdate();
+            
+            ps.close();
+            conn.close();
+            
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public Endereco procurarPorId(int enderecoId) {
+    	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ?;";
+    	
+        try {
+            Connection conn = Conexao.conectar();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            
+            ps.setInt(1, enderecoId);
+            
             ResultSet rs = ps.executeQuery();
-            List<Endereco> listObj = montarLista(rs);
+            
+            Endereco endereco = null;
+            if (rs.next()) {
+            	endereco = montarEndereco(rs);
+            }
+            
             ps.close();
             rs.close();
             conn.close();
-            return listObj;
+            
+            return endereco;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -126,22 +127,26 @@ public class EnderecoDAO {
     }
     
     public boolean existe(Endereco endereco) {
+    	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ?;";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
+            
             ps.setInt(1, endereco.getId());
+            
             ResultSet rs = ps.executeQuery();
+            
+            boolean res = false;
             if (rs.next()) {
-                ps.close();
-                rs.close();
-                conn.close();
-                return true;
+            	res = true;
             }
+            
             ps.close();
             rs.close();
             conn.close();
-            return false;
+            
+            return res;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -149,16 +154,21 @@ public class EnderecoDAO {
     }
     
     public List<Endereco> pesquisarTodos() {
+    	String sql = "SELECT * FROM " + NOMEDATABELA + ";";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "SELECT * FROM " + NOMEDATABELA + ";";
             PreparedStatement ps = conn.prepareStatement(sql);
+            
             ResultSet rs = ps.executeQuery();
-            List<Endereco> listObj = montarLista(rs);
+            
+            List<Endereco> enderecos = montarLista(rs);
+            
             ps.close();
             rs.close();
             conn.close();
-            return listObj;
+            
+            return enderecos;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -166,21 +176,39 @@ public class EnderecoDAO {
     }
     
     private List<Endereco> montarLista(ResultSet rs) {
-        List<Endereco> listObj = new ArrayList<Endereco>();
+        List<Endereco> enderecos = new ArrayList<Endereco>();
         try {
+        	Endereco endereco = null;
+
             while (rs.next()) {
-                Endereco obj = new Endereco();
-                obj.setId(rs.getInt(1));
-                obj.setLogradouro(rs.getString(2));
-                obj.setNumero(rs.getInt(3));
-                obj.setBairro(rs.getString(4));
-                obj.setCidade(rs.getString(5));
-                obj.setCodigoPostal(rs.getString(6));
-                obj.setEstado(rs.getString(7));
-                obj.setCriadoEm(rs.getTimestamp(9).toLocalDateTime());
-                listObj.add(obj);
+            	endereco = montarEndereco(rs);
+                enderecos.add(endereco);
             }
-            return listObj;
+            
+            return enderecos;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    private Endereco montarEndereco(ResultSet rs) {
+        try {
+            Endereco endereco = new Endereco();
+            
+            Timestamp timestamp = rs.getTimestamp("criadoEm");
+            
+            endereco.setId(rs.getInt("id"));
+            endereco.setLogradouro(rs.getString("longradouro"));
+            endereco.setNumero(rs.getInt("numero"));
+            endereco.setBairro(rs.getString("bairro"));
+            endereco.setCodigoPostal(rs.getString("cep"));
+            endereco.setCidade(rs.getString("cidade"));
+            endereco.setEstado(rs.getString("estado"));
+            endereco.setPais(rs.getString("pais"));
+            endereco.setCriadoEm(timestamp.toLocalDateTime());
+            
+            return endereco;
         } catch (Exception e) {
             e.printStackTrace();
             return null;

@@ -6,35 +6,42 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import gameon.models.DTO.Admin;
-import gameon.models.DTO.Usuario;
-import gameon.models.valuesobjects.Email;
-import gameon.models.valuesobjects.Senha;
 import gameon.utils.Conexao;
 
 public class AdminDAO {
 
     final String NOMEDATABELA = "admin";
     
-    public boolean inserir(Admin admin) {
+    public Admin inserir(Admin admin) {
+    	String sql = "INSERT INTO " + NOMEDATABELA + " (id) VALUES (?);";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "INSERT INTO " + NOMEDATABELA + " (id) VALUES (?);";
             PreparedStatement ps = conn.prepareStatement(sql);
+            
             ps.setInt(1, admin.getId());
-            ps.executeUpdate();
+            
+            int rows = ps.executeUpdate();
+            
+            if (rows == 0) {
+            	return null;
+            }
+            
             ps.close();
             conn.close();
-            return true;
+            
+            return procurarPorId(admin.getId());
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
     }
     
     public boolean alterar(Admin admin) {
+    	String sql = "UPDATE usuario SET nome = ?, email = ?, senha = ? WHERE id = ?;";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "UPDATE usuario SET nome = ?, email = ?, senha = ? WHERE id = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, admin.getNome());
             ps.setString(2, admin.getEmail());
@@ -50,15 +57,20 @@ public class AdminDAO {
         }
     }
     
-    public boolean excluir(Admin admin) {
+    public boolean excluir(int adminId) {
+    	String sql = "DELETE FROM admin WHERE id = ?;";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "DELETE FROM usuario WHERE id = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, admin.getId());
+            
+            ps.setInt(1, adminId);
+            
             ps.executeUpdate();
+            
             ps.close();
             conn.close();
+            
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,62 +78,27 @@ public class AdminDAO {
         }
     }
     
-    public Admin procurarPorId(Admin admin) {
+    public Admin procurarPorId(int adminId) {
+    	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ?;";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "SELECT u.id, u.nome, u.email, u.senha, u.criadoEm FROM usuario u " +
-                         "INNER JOIN admin a ON u.id = a.id WHERE u.id = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, admin.getId());
+            
+            ps.setInt(1, adminId);
+            
             ResultSet rs = ps.executeQuery();
+            
+            Admin admin = null;
             if (rs.next()) {
-                Admin obj = new Admin();
-                obj.setId(rs.getInt(1));
-                obj.setNome(rs.getString(2));
-                obj.setEmail(new Email(rs.getString(3)));
-                obj.setSenha(new Senha(rs.getString(4)));
-                obj.setCriadoEm(rs.getTimestamp(5).toLocalDateTime());
-                ps.close();
-                rs.close();
-                conn.close();
-                return obj;
-            } else {
-                ps.close();
-                rs.close();
-                conn.close();
-                return null;
+            	admin = montarAdmin(rs);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-    
-    public Admin procurarPorEmail(Admin admin) {
-        try {
-            Connection conn = Conexao.conectar();
-            String sql = "SELECT u.id, u.nome, u.email, u.senha, u.criadoEm FROM usuario u " +
-                         "INNER JOIN admin a ON u.id = a.id WHERE u.email = ?;";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, admin.getEmail());
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                Admin obj = new Admin();
-                obj.setId(rs.getInt(1));
-                obj.setNome(rs.getString(2));
-                obj.setEmail(new Email(rs.getString(3)));
-                obj.setSenha(new Senha(rs.getString(4)));
-                obj.setCriadoEm(rs.getTimestamp(5).toLocalDateTime());
-                ps.close();
-                rs.close();
-                conn.close();
-                return obj;
-            } else {
-                ps.close();
-                rs.close();
-                conn.close();
-                return null;
-            }
+            
+            ps.close();
+            rs.close();
+            conn.close();
+                
+            return admin;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -129,22 +106,26 @@ public class AdminDAO {
     }
     
     public boolean existe(Admin admin) {
+    	String sql = "SELECT * FROM admin WHERE id = ?;";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "SELECT * FROM admin WHERE id = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
+            
             ps.setInt(1, admin.getId());
+            
             ResultSet rs = ps.executeQuery();
+            
+            boolean res = false;
             if (rs.next()) {
-                ps.close();
-                rs.close();
-                conn.close();
-                return true;
+                res = true;
             }
+            
             ps.close();
             rs.close();
             conn.close();
-            return false;
+            
+            return res;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -152,17 +133,21 @@ public class AdminDAO {
     }
     
     public List<Admin> pesquisarTodos() {
+    	String sql = "SELECT * FROM " + NOMEDATABELA + ";";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "SELECT u.id, u.nome, u.email, u.senha, u.criadoEm FROM usuario u " +
-                         "INNER JOIN admin a ON u.id = a.id;";
             PreparedStatement ps = conn.prepareStatement(sql);
+            
             ResultSet rs = ps.executeQuery();
-            List<Admin> listObj = montarLista(rs);
+            
+            List<Admin> admins = montarLista(rs);
+            
             ps.close();
             rs.close();
             conn.close();
-            return listObj;
+            
+            return admins;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -170,18 +155,30 @@ public class AdminDAO {
     }
     
     private List<Admin> montarLista(ResultSet rs) {
-        List<Admin> listObj = new ArrayList<Admin>();
+        List<Admin> admins = new ArrayList<Admin>();
+        
         try {
+        	Admin admin = null;
+        	
             while (rs.next()) {
-                Admin obj = new Admin();
-                obj.setId(rs.getInt(1));
-                obj.setNome(rs.getString(2));
-                obj.setEmail(new Email(rs.getString(3)));
-                obj.setSenha(new Senha(rs.getString(4)));
-                obj.setCriadoEm(rs.getTimestamp(5).toLocalDateTime());
-                listObj.add(obj);
+            	admin = montarAdmin(rs);
+                admins.add(admin);
             }
-            return listObj;
+            
+            return admins;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    private Admin montarAdmin(ResultSet rs) {
+        try {
+            Admin admin = new Admin();
+            
+            admin.setId(rs.getInt("id"));
+            
+            return admin;
         } catch (Exception e) {
             e.printStackTrace();
             return null;

@@ -1,8 +1,5 @@
 package gameon.models.DTO;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class Cliente extends Usuario {
 	private String cpf;
 	private String telefone;
@@ -41,18 +38,4 @@ public class Cliente extends Usuario {
 		builder.append("]");
 		return builder.toString();
 	}
-	
-	public Map<String, Object> toAsaas() {
-		Map<String, Object> dadosAsaas = new HashMap<>();
-		
-		dadosAsaas.put("name", getNome());
-		dadosAsaas.put("cpfCnpj", getCpf());
-		
-		return dadosAsaas;
-	}
-	
-	public String getAsaasUrl() {
-		return "customers/" + getAsaasCliente();
-	}
-	
 }

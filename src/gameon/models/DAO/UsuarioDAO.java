@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gameon.models.DTO.Usuario;
-import gameon.models.valuesobjects.Email;
-import gameon.models.valuesobjects.Senha;
 import gameon.utils.Conexao;
 
 public class UsuarioDAO {
@@ -26,18 +24,20 @@ public class UsuarioDAO {
             ps.setString(2, usuario.getEmail());
             ps.setString(3, usuario.getSenha()); 
             
-           int rows = ps.executeUpdate();
+            int rows = ps.executeUpdate();
             
             if (rows == 0) {
             	return null;
             }
             
             ResultSet rs = ps.getGeneratedKeys();
+            
             if (rs.next()) {
             	usuario.setId(rs.getInt(1));
             }
             
             ps.close();
+            rs.close();
             conn.close();
             
             return procurarPorId(usuario.getId());
@@ -71,14 +71,14 @@ public class UsuarioDAO {
         }
     }
     
-    public boolean excluir(Usuario usuario) { 
+    public boolean excluir(int usuarioId) { 
     	String sql = "DELETE FROM " + NOMEDATABELA + " WHERE id = ?;";
     	
         try {
             Connection conn = Conexao.conectar();
             PreparedStatement ps = conn.prepareStatement(sql);
             
-            ps.setInt(1, usuario.getId());
+            ps.setInt(1, usuarioId);
             
             ps.executeUpdate();
             
@@ -120,24 +120,26 @@ public class UsuarioDAO {
     }
     
     public Usuario procurarPorEmail(String email) { 
+    	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE email = ?;";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE email = ?;"; 
             PreparedStatement ps = conn.prepareStatement(sql);
+            
             ps.setString(1, email);
+            
             ResultSet rs = ps.executeQuery();
+            
+            Usuario usuario = null;
             if (rs.next()) {
-                Usuario obj = montarUsuario(rs); 
-                ps.close();
-                rs.close();
-                conn.close();
-                return obj;
-            } else {
-                ps.close();
-                rs.close();
-                conn.close();
-                return null;
-            }
+            	usuario = montarUsuario(rs);
+            } 
+            
+            ps.close();
+            rs.close();
+            conn.close();
+            
+            return usuario;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -145,33 +147,45 @@ public class UsuarioDAO {
     }
     
     public boolean existe(Usuario usuario) { 
+    	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ? OR email = ?;";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE email = ?;"; 
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, usuario.getEmail());
+            
+            ps.setInt(1, usuario.getId());
+            ps.setString(2, usuario.getEmail());
+            
             ResultSet rs = ps.executeQuery();
+            
+            boolean res = false;
             if (rs.next()) {
-                ps.close();
-                rs.close();
-                conn.close();
-                return true;
+                res = true;
             }
+            
+            ps.close();
+            rs.close();
+            conn.close();
+            
+            return res;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
-        return false;
     }
     
     public List<Usuario> pesquisarTodos() { 
+    	String sql = "SELECT * FROM " + NOMEDATABELA + ";";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "SELECT * FROM " + NOMEDATABELA + ";";
             PreparedStatement ps = conn.prepareStatement(sql);
+            
             ResultSet rs = ps.executeQuery();
-            List<Usuario> listObj = montarListaUsuario(rs); 
-            return listObj;
+            
+            List<Usuario> usuarios = montarListaUsuario(rs);
+            
+            return usuarios;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -179,13 +193,17 @@ public class UsuarioDAO {
     }
     
     public List<Usuario> montarListaUsuario(ResultSet rs) {
-        List<Usuario> listObj = new ArrayList<Usuario>();
+        List<Usuario> usuarios = new ArrayList<Usuario>();
+        
         try {
+        	Usuario usuario = null;
+        	
             while (rs.next()) {
-                // Usuario obj = montarUsuario(rs);
-                // listObj.add(obj);
+                 usuario = montarUsuario(rs);
+                 usuarios.add(usuario);
             }
-            return listObj;
+            
+            return usuarios;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -196,14 +214,12 @@ public class UsuarioDAO {
         try {
             Usuario usuario = new Usuario() {};
             
-            Email email = new Email(rs.getString("email"));
-            Senha senha = new Senha(rs.getString("senha"));
             Timestamp timestamp = rs.getTimestamp("criadoEm");
             
             usuario.setId(rs.getInt("id"));
             usuario.setNome(rs.getString("nome"));
-            usuario.setEmail(email);
-            usuario.setSenha(senha);
+            usuario.setEmail(rs.getString("email"));
+            usuario.setSenha(rs.getString("senha"));
             usuario.setCriadoEm(timestamp.toLocalDateTime());
             
             return usuario;
@@ -212,7 +228,5 @@ public class UsuarioDAO {
             return null;
             
         }
-        
     }
-    
 }

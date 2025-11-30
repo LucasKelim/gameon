@@ -9,6 +9,7 @@ public class Produto {
 	private double preco;
 	private int estoque;
 	private boolean status;
+	private int adminId;
 	private Admin admin;
 	private LocalDateTime criadoEm;
 	
@@ -47,6 +48,12 @@ public class Produto {
 	}
 	public void setStatus(boolean status) {
 		this.status = status;
+	}
+	public int getAdminId() {
+		return adminId;
+	}
+	public void setAdminId(int adminId) {
+		this.adminId = adminId;
 	}
 	public Admin getAdmin() {
 		return admin;

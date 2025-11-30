@@ -4,10 +4,14 @@ import java.util.List;
 
 import gameon.models.DAO.UsuarioDAO;
 import gameon.models.DTO.Usuario;
+import gameon.models.valuesobjects.Email;
 
 public class UsuarioBO {
 	
 	public Usuario inserir(Usuario usuario) {
+		
+		validar(usuario);
+		
 		if (!existe(usuario)) {
 			UsuarioDAO usuarioDAO = new UsuarioDAO();
 			
@@ -18,6 +22,9 @@ public class UsuarioBO {
 	}
 	
 	public Usuario alterar(Usuario usuario) {
+		
+		validar(usuario);
+		
 		UsuarioDAO usuarioDAO = new UsuarioDAO();
 		
 		return usuarioDAO.alterar(usuario);
@@ -26,7 +33,7 @@ public class UsuarioBO {
 	public boolean excluir(Usuario usuario) {
 		UsuarioDAO usuarioDAO = new UsuarioDAO();
 		
-		return usuarioDAO.excluir(usuario);
+		return usuarioDAO.excluir(usuario.getId());
 	}
 	
     public Usuario procurarPorId(int usuarioId){
@@ -51,6 +58,16 @@ public class UsuarioBO {
 		UsuarioDAO usuarioDAO = new UsuarioDAO();
 
 		return usuarioDAO.pesquisarTodos();
+	}
+	
+	private void validar(Usuario usuario) {
+		try {
+	        Email emailVO = new Email(usuario.getEmail());
+	        usuario.setEmail(emailVO.getEmail());
+	        
+	    } catch (IllegalArgumentException e) {
+	        throw new IllegalArgumentException(e.getMessage());
+	    }
 	}
 	
 }

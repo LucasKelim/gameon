@@ -62,14 +62,14 @@ public class ClienteDAO {
         }
     }
     
-    public boolean excluir(Cliente cliente) {
+    public boolean excluir(int clienteId) {
     	String sql = "DELETE FROM " + NOMEDATABELA + " WHERE id = ?;";
     	
         try {
             Connection conn = Conexao.conectar();
             PreparedStatement ps = conn.prepareStatement(sql);
             
-            ps.setInt(1, cliente.getId());
+            ps.setInt(1, clienteId);
             
             ps.executeUpdate();
             
@@ -110,87 +110,54 @@ public class ClienteDAO {
         }
     }
     
-    public Cliente procurarPorCpf(Cliente cliente) {
+    public Cliente procurarPorCpf(String clienteCpf) {
+    	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE cpf = ?;";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "SELECT u.*, c.cpf, c.telefone, c.asaasCliente " +
-                        "FROM usuario u " +
-                        "INNER JOIN cliente c ON u.id = c.id " +
-                        "WHERE c.cpf = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, cliente.getCpf());
+            
+            ps.setString(1, clienteCpf);
+            
             ResultSet rs = ps.executeQuery();
             
+            Cliente cliente = null;
             if (rs.next()) {
-                Cliente obj = montarCliente(rs);
-                ps.close();
-                rs.close();
-                conn.close();
-                return obj;
-            } else {
-                ps.close();
-                rs.close();
-                conn.close();
-                return null;
+            	cliente = montarCliente(rs);
             }
+            
+            ps.close();
+            rs.close();
+            conn.close();
+            
+            return cliente;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
     
-    public Cliente procurarPorEmail(String email) {
+    public Cliente procurarPorAsaasId(String clienteAsaasId) {
+    	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE asaasCliente = ?;";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "SELECT u.*, c.cpf, c.telefone, c.asaasCliente " +
-                        "FROM usuario u " +
-                        "INNER JOIN cliente c ON u.id = c.id " +
-                        "WHERE u.email = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, email);
+            
+            ps.setString(1, clienteAsaasId);
+            
             ResultSet rs = ps.executeQuery();
             
+            Cliente cliente = null;
             if (rs.next()) {
-                Cliente obj = montarCliente(rs);
-                ps.close();
-                rs.close();
-                conn.close();
-                return obj;
-            } else {
-                ps.close();
-                rs.close();
-                conn.close();
-                return null;
+            	cliente = montarCliente(rs);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-    
-    public Cliente procurarPorAsaasId(Cliente cliente) {
-        try {
-            Connection conn = Conexao.conectar();
-            String sql = "SELECT u.*, c.cpf, c.telefone, c.asaasCliente " +
-                        "FROM usuario u " +
-                        "INNER JOIN cliente c ON u.id = c.id " +
-                        "WHERE c.asaasCliente = ?;";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, cliente.getAsaasCliente());
-            ResultSet rs = ps.executeQuery();
             
-            if (rs.next()) {
-                Cliente obj = montarCliente(rs);
-                ps.close();
-                rs.close();
-                conn.close();
-                return obj;
-            } else {
-                ps.close();
-                rs.close();
-                conn.close();
-                return null;
-            }
+            ps.close();
+            rs.close();
+            conn.close();
+            
+            return cliente;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -198,7 +165,7 @@ public class ClienteDAO {
     }
     
     public boolean existe(Cliente cliente) {
-    	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ? OR cpf = ? OR asaasCliente = ?;";
+    	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ? OR cpf = ? OR asaasCliente = ? OR telefone = ?;";
     	
         try {
             Connection conn = Conexao.conectar();
@@ -207,6 +174,7 @@ public class ClienteDAO {
             ps.setInt(1, cliente.getId());
             ps.setString(2, cliente.getCpf());
             ps.setString(3, cliente.getAsaasCliente());
+            ps.setString(4, cliente.getTelefone());
             
             ResultSet rs = ps.executeQuery();
             
@@ -249,14 +217,17 @@ public class ClienteDAO {
     }
     
     public List<Cliente> montarLista(ResultSet rs) {
-        List<Cliente> listObj = new ArrayList<Cliente>();
+        List<Cliente> clientes = new ArrayList<Cliente>();
         
         try {
+        	Cliente cliente = null;
+        	
             while (rs.next()) {
-                Cliente obj = montarCliente(rs);
-                listObj.add(obj);
+            	cliente = montarCliente(rs);
+            	clientes.add(cliente);
             }
-            return listObj;
+            
+            return clientes;
         } catch (Exception e) {
             e.printStackTrace();
             return null;

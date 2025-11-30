@@ -2,14 +2,11 @@ package gameon.models.DTO;
 
 import java.time.LocalDateTime;
 
-import gameon.models.valuesobjects.Email;
-import gameon.models.valuesobjects.Senha;
-
 abstract public class Usuario {
 	private int id;
 	private String nome;
-	private Email email;
-	private Senha senha;
+	private String email;
+	private String senha;
 	private LocalDateTime criadoEm;
 	
 	public int getId() {
@@ -25,15 +22,15 @@ abstract public class Usuario {
 		this.nome = nome;
 	}
 	public String getEmail() {
-		return email.getEmail();
+		return email;
 	}
-	public void setEmail(Email email) {
+	public void setEmail(String email) {
 		this.email = email;
 	}
 	public String getSenha() {
-		return senha.getSenha();
+		return senha;
 	}
-	public void setSenha(Senha senha) {
+	public void setSenha(String senha) {
 		this.senha = senha;
 	}
 	public LocalDateTime getCriadoEm() {
@@ -51,9 +48,9 @@ abstract public class Usuario {
 		builder.append(", nome=");
 		builder.append(nome);
 		builder.append(", email=");
-		builder.append(email.getEmail());
+		builder.append(email);
 		builder.append(", senha=");
-		builder.append(senha.getSenha());
+		builder.append(senha);
 		builder.append(", criadoEm=");
 		builder.append(criadoEm);
 		builder.append("]");

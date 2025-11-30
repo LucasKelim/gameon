@@ -2,11 +2,9 @@ package gameon.models.DTO;
 
 import java.time.LocalDateTime;
 
-import gameon.models.enums.TipoMovimentacao;
-
 public class Movimentacao {
 	private int id;
-	private TipoMovimentacao movimentacao;
+	private String movimentacao;
 	private int quantidade;
 	private int produtoId;
 	private Produto produto;
@@ -20,11 +18,11 @@ public class Movimentacao {
 		this.id = id;
 	}
 	
-	public TipoMovimentacao getMovimentacao() {
+	public String getMovimentacao() {
 		return movimentacao;
 	}
 	
-	public void setMovimentacao(TipoMovimentacao movimentacao) {
+	public void setMovimentacao(String movimentacao) {
 		this.movimentacao = movimentacao;
 	}
 	
@@ -66,7 +64,7 @@ public class Movimentacao {
 		builder.append("MovimentacaoDTO [id=");
 		builder.append(id);
 		builder.append(", movimentacao=");
-		builder.append(movimentacao.getDescricao());
+		builder.append(movimentacao);
 		builder.append(", quantidade=");
 		builder.append(quantidade);
 		builder.append(", produto=");

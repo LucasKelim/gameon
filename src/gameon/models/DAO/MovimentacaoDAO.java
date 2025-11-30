@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gameon.models.DTO.Movimentacao;
-import gameon.models.enums.TipoMovimentacao;
 import gameon.utils.Conexao;
 
 public class MovimentacaoDAO {
@@ -21,7 +20,7 @@ public class MovimentacaoDAO {
             Connection conn = Conexao.conectar();
             PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
             
-            ps.setString(1, movimentacao.getMovimentacao().name());
+            ps.setString(1, movimentacao.getMovimentacao());
             ps.setInt(2, movimentacao.getQuantidade());
             ps.setInt(3, movimentacao.getProduto().getId());
             
@@ -32,11 +31,13 @@ public class MovimentacaoDAO {
             }
             
             ResultSet rs = ps.getGeneratedKeys();
+            
             if (rs.next()) {
             	movimentacao.setId(rs.getInt(1));
             }
             
             ps.close();
+            rs.close();
             conn.close();
             
             return procurarPorId(movimentacao.getId());
@@ -84,18 +85,20 @@ public class MovimentacaoDAO {
             
             ResultSet rs = ps.executeQuery();
             
+            boolean res = false;
             if (rs.next()) {
-                ps.close();
-                rs.close();
-                conn.close();
-                return true;
+            	res = true;
             }
+            
+            ps.close();
+            rs.close();
+            conn.close();
+            
+            return res;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
-        
-        return false;
     }
     
     public List<Movimentacao> pesquisarTodos() { 
@@ -107,9 +110,9 @@ public class MovimentacaoDAO {
             
             ResultSet rs = ps.executeQuery();
             
-            List<Movimentacao> listObj = montarListaMovimentacao(rs);
+            List<Movimentacao> movimentacoes = montarListaMovimentacao(rs);
             
-            return listObj;
+            return movimentacoes;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -117,14 +120,17 @@ public class MovimentacaoDAO {
     }
     
     public List<Movimentacao> montarListaMovimentacao(ResultSet rs) {
-        List<Movimentacao> listObj = new ArrayList<Movimentacao>();
+        List<Movimentacao> movimentacoes = new ArrayList<Movimentacao>();
         
         try {
+        	Movimentacao movimentacao = null;
+        	
             while (rs.next()) {
-                 Movimentacao obj = montarMovimentacao(rs);
-                 listObj.add(obj);
+                 movimentacao = montarMovimentacao(rs);
+                 movimentacoes.add(movimentacao);
             }
-            return listObj;
+            
+            return movimentacoes;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -135,11 +141,10 @@ public class MovimentacaoDAO {
         try {
             Movimentacao movimentacao = new Movimentacao();
             
-            TipoMovimentacao tipoMovimentacao = TipoMovimentacao.valueOf(rs.getString("tipo"));
             Timestamp timestamp = rs.getTimestamp("criadoEm");
             
             movimentacao.setId(rs.getInt("id"));
-            movimentacao.setMovimentacao(tipoMovimentacao);
+            movimentacao.setMovimentacao(rs.getString("tipo"));
             movimentacao.setQuantidade(rs.getInt("quantidade"));
             movimentacao.setProdutoId(rs.getInt("produtoId"));
             movimentacao.setCriadoEm(timestamp.toLocalDateTime());

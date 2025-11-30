@@ -3,6 +3,7 @@ package gameon.models.DAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import gameon.models.DTO.Produto;
@@ -12,32 +13,50 @@ public class ProdutoDAO {
 
     final String NOMEDATABELA = "produto";
     
-    public boolean inserir(Produto produto) {
+    public Produto inserir(Produto produto) {
+    	String sql = "INSERT INTO " + NOMEDATABELA + " (nome, descricao, preco, estoque, status, adminId) VALUES (?, ?, ?, ?, ?, ?);";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "INSERT INTO " + NOMEDATABELA + " (nome, descricao, preco, estoque, status, adminId) VALUES (?, ?, ?, ?, ?, ?);";
-            PreparedStatement ps = conn.prepareStatement(sql);
+            PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+            
             ps.setString(1, produto.getNome());
             ps.setString(2, produto.getDescricao());
             ps.setDouble(3, produto.getPreco());
             ps.setInt(4, produto.getEstoque());
             ps.setBoolean(5, produto.getStatus());
             ps.setInt(6, produto.getAdmin().getId());
-            ps.executeUpdate();
+            
+            int rows = ps.executeUpdate();
+            
+            if (rows == 0) {
+            	return null;
+            }
+            
+        	ResultSet rs = ps.getGeneratedKeys();
+            
+            if (rs.next()) {
+                produto.setId(rs.getInt("id"));
+            }
+
             ps.close();
+            rs.close();
             conn.close();
-            return true;
+            
+            return procurarPorId(produto.getId());
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
     }
     
-    public boolean alterar(Produto produto) {
+    public Produto alterar(Produto produto) {
+    	String sql = "UPDATE " + NOMEDATABELA + " SET nome = ?, descricao = ?, preco = ?, estoque = ?, status = ?, adminId = ? WHERE id = ?;";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "UPDATE " + NOMEDATABELA + " SET nome = ?, descricao = ?, preco = ?, estoque = ?, status = ?, adminId = ? WHERE id = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
+            
             ps.setString(1, produto.getNome());
             ps.setString(2, produto.getDescricao());
             ps.setDouble(3, produto.getPreco());
@@ -45,92 +64,88 @@ public class ProdutoDAO {
             ps.setBoolean(5, produto.getStatus());
             ps.setInt(6, produto.getAdmin().getId());
             ps.setInt(7, produto.getId());
+            
             ps.executeUpdate();
+            
             ps.close();
             conn.close();
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-    
-    public boolean excluir(Produto produto) {
-        try {
-            Connection conn = Conexao.conectar();
-            String sql = "DELETE FROM " + NOMEDATABELA + " WHERE id = ?;";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, produto.getId());
-            ps.executeUpdate();
-            ps.close();
-            conn.close();
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-    
-    public Produto procurarPorId(Produto produto) {
-        try {
-            Connection conn = Conexao.conectar();
-            String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ?;";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, produto.getId());
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                Produto obj = new Produto();
-                obj.setId(rs.getInt(1));
-                obj.setNome(rs.getString(2));
-                obj.setDescricao(rs.getString(3));
-                obj.setPreco(rs.getDouble(4));
-                obj.setEstoque(rs.getInt(5));
-                obj.setStatus(rs.getBoolean(6));
-                // adminId será tratado separadamente se necessário
-                obj.setCriadoEm(rs.getTimestamp(8).toLocalDateTime());
-                ps.close();
-                rs.close();
-                conn.close();
-                return obj;
-            } else {
-                ps.close();
-                rs.close();
-                conn.close();
-                return null;
-            }
+            
+            return produto;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
     
-    public Produto procurarPorNome(Produto produto) {
+    public boolean excluir(int produtoId) {
+    	String sql = "DELETE FROM " + NOMEDATABELA + " WHERE id = ?;";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE nome = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, produto.getNome());
+            
+            ps.setInt(1, produtoId);
+            
+            ps.executeUpdate();
+            
+            ps.close();
+            conn.close();
+            
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public Produto procurarPorId(int produtoId) {
+    	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ?;";
+    	
+        try {
+            Connection conn = Conexao.conectar();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            
+            ps.setInt(1, produtoId);
+            
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                Produto obj = new Produto();
-                obj.setId(rs.getInt(1));
-                obj.setNome(rs.getString(2));
-                obj.setDescricao(rs.getString(3));
-                obj.setPreco(rs.getDouble(4));
-                obj.setEstoque(rs.getInt(5));
-                obj.setStatus(rs.getBoolean(6));
-                // adminId será tratado separadamente se necessário
-                obj.setCriadoEm(rs.getTimestamp(8).toLocalDateTime());
-                ps.close();
-                rs.close();
-                conn.close();
-                return obj;
-            } else {
-                ps.close();
-                rs.close();
-                conn.close();
-                return null;
+            
+            Produto produto = null;
+            if (rs.next()) {	
+                produto = montarProduto(rs);
             }
+            
+            ps.close();
+            rs.close();
+            conn.close();
+            
+            return produto;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    public Produto procurarPorNome(String produtoNome) {
+    	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE nome = ?;";
+    	
+        try {
+            Connection conn = Conexao.conectar();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            
+            ps.setString(1, produtoNome);
+            
+            ResultSet rs = ps.executeQuery();
+            
+            Produto produto = null;
+            if (rs.next()) {
+                produto = montarProduto(rs);
+            }
+            
+            ps.close();
+            rs.close();
+            conn.close();
+            
+            return produto;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -138,33 +153,44 @@ public class ProdutoDAO {
     }
     
     public boolean existe(Produto produto) {
+    	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE nome = ?;";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE nome = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
+            
             ps.setString(1, produto.getNome());
+            
             ResultSet rs = ps.executeQuery();
+            
+            boolean res = false;
             if (rs.next()) {
-                ps.close();
-                rs.close();
-                conn.close();
-                return true;
+            	return true;                
             }
+            
+            ps.close();
+            rs.close();
+            conn.close();
+            
+            return res;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
-        return false;
     }
     
     public List<Produto> pesquisarTodos() {
+    	String sql = "SELECT * FROM " + NOMEDATABELA + ";";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "SELECT * FROM " + NOMEDATABELA + ";";
             PreparedStatement ps = conn.prepareStatement(sql);
+            
             ResultSet rs = ps.executeQuery();
-            List<Produto> listObj = montarLista(rs);
-            return listObj;
+            
+            List<Produto> produtos = montarLista(rs);
+            
+            return produtos;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -172,24 +198,43 @@ public class ProdutoDAO {
     }
     
     public List<Produto> montarLista(ResultSet rs) {
-        List<Produto> listObj = new ArrayList<Produto>();
+        List<Produto> produtos = new ArrayList<Produto>();
+        
         try {
+        	Produto produto = null;
+        	
             while (rs.next()) {
-                Produto obj = new Produto();
-                obj.setId(rs.getInt(1));
-                obj.setNome(rs.getString(2));
-                obj.setDescricao(rs.getString(3));
-                obj.setPreco(rs.getDouble(4));
-                obj.setEstoque(rs.getInt(5));
-                obj.setStatus(rs.getBoolean(6));
-                // adminId será tratado separadamente se necessário
-                obj.setCriadoEm(rs.getTimestamp(8).toLocalDateTime());
-                listObj.add(obj);
+            	produto = montarProduto(rs);
+            	produtos.add(produto);
             }
-            return listObj;
+            
+            return produtos;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
+    
+    private Produto montarProduto(ResultSet rs) {
+        try {
+        	Produto produto = new Produto();
+        	
+        	Timestamp timestamp = rs.getTimestamp("criadoEm");
+            
+        	produto.setId(rs.getInt("id"));
+        	produto.setNome(rs.getString("nome"));
+        	produto.setDescricao(rs.getString("descricao"));
+        	produto.setPreco(rs.getDouble("preco"));
+        	produto.setEstoque(rs.getInt("estoque"));
+        	produto.setStatus(rs.getBoolean("status"));
+        	produto.setAdminId(rs.getInt("adminId"));
+        	produto.setCriadoEm(timestamp.toLocalDateTime());
+            
+            return produto;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }

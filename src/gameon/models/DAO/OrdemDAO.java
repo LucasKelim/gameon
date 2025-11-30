@@ -7,11 +7,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import gameon.models.DTO.Ordem;
-import gameon.models.DTO.Usuario;
-import gameon.models.enums.OrdemStatus;
-import gameon.models.valuesobjects.Email;
-import gameon.models.valuesobjects.Senha;
-import gameon.models.DTO.Endereco;
 import gameon.utils.Conexao;
 
 public class OrdemDAO {
@@ -19,25 +14,60 @@ public class OrdemDAO {
     final String NOMEDATABELA = "ordem";
     
     public Ordem inserir(Ordem ordem) {
+    	String sql = "INSERT INTO " + NOMEDATABELA + " (status, metodoPagamento, valorTotal, enderecoId, asaasOrdem) VALUES (?, ?, ?, ?, ?);";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "INSERT INTO " + NOMEDATABELA + " (status, metodoPagamento, valorTotal, enderecoId, asaasOrdem) VALUES (?, ?, ?, ?, ?);";
             PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+            
             ps.setString(1, ordem.getStatus().toString());
-            ps.setString(2, ordem.getMetodoPagamento().descricao());
+            ps.setString(2, ordem.getMetodoPagamento());
             ps.setDouble(3, ordem.getValorTotal());
             ps.setInt(4, ordem.getEndereco().getId());
             ps.setString(5, ordem.getAsaasOrdem());
-            ps.executeUpdate();
+            
+        	int rows = ps.executeUpdate();
+            
+            if (rows == 0) {
+            	return null;
+            }
             
             ResultSet rs = ps.getGeneratedKeys();
+            
             if (rs.next()) {
-                ordem.setId(rs.getInt(1));
+                ordem.setId(rs.getInt("id"));
             }
             
             ps.close();
             rs.close();
             conn.close();
+            
+            return procurarPorId(ordem.getId());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    public Ordem alterar(Ordem ordem) {
+    	String sql = "UPDATE " + NOMEDATABELA + " SET status = ?, metodoPagamento = ?, valorTotal = ?, enderecoId = ?, asaasOrdem = ? WHERE id = ?;";
+    	
+        try {
+            Connection conn = Conexao.conectar();    
+            PreparedStatement ps = conn.prepareStatement(sql);
+            
+            ps.setString(1, ordem.getStatus());
+            ps.setString(2, ordem.getMetodoPagamento());
+            ps.setDouble(3, ordem.getValorTotal());
+            ps.setInt(4, ordem.getEndereco().getId());
+            ps.setString(5, ordem.getAsaasOrdem());
+            ps.setInt(6, ordem.getId());
+            
+            ps.executeUpdate();
+            
+            ps.close();
+            conn.close();
+            
             return ordem;
         } catch (Exception e) {
             e.printStackTrace();
@@ -45,62 +75,48 @@ public class OrdemDAO {
         }
     }
     
-    public boolean alterar(Ordem ordem) {
+    public boolean excluir(int ordemId) {
+    	String sql = "DELETE FROM " + NOMEDATABELA + " WHERE id = ?;";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "UPDATE " + NOMEDATABELA + " SET status = ?, metodoPagamento = ?, valorTotal = ?, enderecoId = ?, asaasOrdem = ? WHERE id = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, ordem.getStatus().toString());
-            ps.setString(2, ordem.getMetodoPagamento().descricao());
-            ps.setDouble(3, ordem.getValorTotal());
-            ps.setInt(4, ordem.getEndereco().getId());
-            ps.setString(5, ordem.getAsaasOrdem());
-            ps.setInt(6, ordem.getId());
-            ps.executeUpdate();
-            ps.close();
-            conn.close();
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-    
-    public boolean excluir(Ordem ordem) {
-        try {
-            Connection conn = Conexao.conectar();
-            String sql = "DELETE FROM " + NOMEDATABELA + " WHERE id = ?;";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, ordem.getId());
-            ps.executeUpdate();
-            ps.close();
-            conn.close();
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-    
-    public Ordem procurarPorId(Ordem ordem) {
-        try {
-            Connection conn = Conexao.conectar();
-            String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ?;";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, ordem.getId());
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-            	 ps.close();
-                 rs.close();
-                 conn.close();
-                return montarOrdem(rs);
             
-            } else {
-                ps.close();
-                rs.close();
-                conn.close();
-                return null;
+            ps.setInt(1, ordemId);
+            
+            ps.executeUpdate();
+            
+            ps.close();
+            conn.close();
+            
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public Ordem procurarPorId(int ordemId) {
+    	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ?;";
+    	
+        try {
+            Connection conn = Conexao.conectar();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            
+            ps.setInt(1, ordemId);
+            
+            ResultSet rs = ps.executeQuery();
+            
+            Ordem ordem = null;
+            if (rs.next()) {
+            	ordem = montarOrdem(rs);
             }
+            
+            ps.close();
+            rs.close();
+            conn.close();
+            
+            return ordem;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -128,17 +144,23 @@ public class OrdemDAO {
     }
     
     public List<Ordem> procurarPorStatus(String status) {
+    	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE status = ? ORDER BY criadoEm DESC;";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE status = ? ORDER BY criadoEm DESC;";
             PreparedStatement ps = conn.prepareStatement(sql);
+            
             ps.setString(1, status);
+            
             ResultSet rs = ps.executeQuery();
-            List<Ordem> listObj = montarLista(rs);
+            
+            List<Ordem> ordens = montarLista(rs);
+            
             ps.close();
             rs.close();
             conn.close();
-            return listObj;
+            
+            return ordens;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -146,22 +168,26 @@ public class OrdemDAO {
     }
     
     public boolean existe(Ordem ordem) {
+    	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ?;";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
+            
             ps.setInt(1, ordem.getId());
+            
             ResultSet rs = ps.executeQuery();
+            
+            boolean res = false;
             if (rs.next()) {
-                ps.close();
-                rs.close();
-                conn.close();
-                return true;
+                res = true;
             }
+            
             ps.close();
             rs.close();
             conn.close();
-            return false;
+            
+            return res;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -169,16 +195,39 @@ public class OrdemDAO {
     }
     
     public List<Ordem> pesquisarTodos() {
+    	String sql = "SELECT * FROM " + NOMEDATABELA + " ORDER BY criadoEm DESC;";
+    	
         try {
             Connection conn = Conexao.conectar();
-            String sql = "SELECT * FROM " + NOMEDATABELA + " ORDER BY criadoEm DESC;";
             PreparedStatement ps = conn.prepareStatement(sql);
+            
             ResultSet rs = ps.executeQuery();
-            List<Ordem> listObj = montarLista(rs);
+            
+            List<Ordem> ordens = montarLista(rs);
+            
             ps.close();
             rs.close();
             conn.close();
-            return listObj;
+            
+            return ordens;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    private List<Ordem> montarLista(ResultSet rs) {
+        List<Ordem> ordens = new ArrayList<Ordem>();
+        
+        try {
+        	Ordem ordem = null;
+        	
+            while (rs.next()) {
+            	ordem = montarOrdem(rs);
+                ordens.add(ordem);
+            }
+            
+            return ordens;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -191,36 +240,15 @@ public class OrdemDAO {
           
             Timestamp timestamp = rs.getTimestamp("criadoEm");
          
-//            ordem.setId(rs.getInt("id");
-//            ordem.setStatus(OrdemStatus.valueOf(rs.getString("status")));
-//            ordem.setMetodoPagamento(rs.getString(""));
-//            ordem.setValorTotal(rs.getDouble("valorTotal"));
-//            ordem.setAsaasOrdem(rs.getString("asaasOrdem"));
-//            ordem.setCriadoEm(rs.getTimestamp(7).toLocalDateTime());
+            ordem.setId(rs.getInt("id"));
+            ordem.setStatus(rs.getString("status"));
+            ordem.setMetodoPagamento(rs.getString("metodoPagamento"));
+            ordem.setValorTotal(rs.getDouble("valorTotal"));
+            ordem.setEnderecoId(rs.getInt("enderecoId"));
+            ordem.setAsaasOrdem(rs.getString("asaasOrdem"));
+            ordem.setCriadoEm(timestamp.toLocalDateTime());
             
             return ordem;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-            
-        }
-        
-    }
-    
-    private List<Ordem> montarLista(ResultSet rs) {
-        List<Ordem> listObj = new ArrayList<Ordem>();
-        try {
-            while (rs.next()) {
-                Ordem obj = new Ordem();
-                obj.setId(rs.getInt("id");
-                obj.setStatus(OrdemStatus.valueOf(rs.getString(2)));
-                obj.setMetodoPagamento(rs.getString(3));
-                obj.setValorTotal(rs.getDouble(4));
-                obj.setAsaasOrdem(rs.getString(6));
-                obj.setCriadoEm(rs.getTimestamp(7).toLocalDateTime());
-                listObj.add(obj);
-            }
-            return listObj;
         } catch (Exception e) {
             e.printStackTrace();
             return null;

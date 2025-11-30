@@ -8,17 +8,17 @@ import gameon.models.DTO.Produto;
 public class ProdutoBO {
 	
 
-	public boolean inserir(Produto produto) {
+	public Produto inserir(Produto produto) {
 		if (!existe(produto)) {
 			ProdutoDAO produtoDAO = new ProdutoDAO();
 			
 			return produtoDAO.inserir(produto);
 		}
 		
-		return false;
+		return null;
 	}
 	
-	public boolean alterar(Produto produto) {
+	public Produto alterar(Produto produto) {
 		ProdutoDAO produtoDAO = new ProdutoDAO();
 		
 		return produtoDAO.alterar(produto);
@@ -27,19 +27,19 @@ public class ProdutoBO {
 	public boolean excluir(Produto produto) {
 		ProdutoDAO produtoDAO = new ProdutoDAO();
 		
-		return produtoDAO.excluir(produto);
+		return produtoDAO.excluir(produto.getId());
 	}
 	
     public Produto procurarPorId(Produto produto){
     	ProdutoDAO produtoDAO = new ProdutoDAO();
     	
-        return produtoDAO.procurarPorId(produto);
+        return produtoDAO.procurarPorId(produto.getId());
     }
     
     public Produto procurarPorNome(Produto produto){
     	ProdutoDAO produtoDAO = new ProdutoDAO();
     	
-        return produtoDAO.procurarPorNome(produto);
+        return produtoDAO.procurarPorNome(produto.getNome());
     }
 	
 	public boolean existe(Produto produto) {

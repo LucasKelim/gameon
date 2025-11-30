@@ -2,15 +2,14 @@ package gameon.models.DTO;
 
 import java.time.LocalDateTime;
 
-import gameon.models.enums.OrdemStatus;
-import gameon.models.interfaces.MetodoPagamento;
-
 public class Ordem {
 	private int id;
-	private OrdemStatus status;
-	private MetodoPagamento metodoPagamento;
+	private String status;
+	private String metodoPagamento;
 	private double valorTotal;
+	private int clienteId;
 	private Cliente cliente;
+	private int enderecoId;
 	private Endereco endereco;
 	private String asaasOrdem;
 	private LocalDateTime criadoEm;
@@ -21,16 +20,16 @@ public class Ordem {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public OrdemStatus getStatus() {
+	public String getStatus() {
 		return status;
 	}
-	public void setStatus(OrdemStatus status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
-	public MetodoPagamento getMetodoPagamento() {
+	public String getMetodoPagamento() {
 		return metodoPagamento;
 	}
-	public void setMetodoPagamento(MetodoPagamento metodoPagamento) {
+	public void setMetodoPagamento(String metodoPagamento) {
 		this.metodoPagamento = metodoPagamento;
 	}
 	public double getValorTotal() {
@@ -39,11 +38,23 @@ public class Ordem {
 	public void setValorTotal(double valorTotal) {
 		this.valorTotal = valorTotal;
 	}
+	public int getClienteId() {
+		return clienteId;
+	}
+	public void setClienteId(int clienteId) {
+		this.clienteId = clienteId;
+	}
 	public Cliente getCliente() {
 		return cliente;
 	}
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
+	}
+	public int getEnderecoId() {
+		return enderecoId;
+	}
+	public void setEnderecoId(int enderecoId) {
+		this.enderecoId = enderecoId;
 	}
 	public Endereco getEndereco() {
 		return endereco;
