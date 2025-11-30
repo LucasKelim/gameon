@@ -1,9 +1,12 @@
 package gameon.controllers;
 
+import gameon.models.Cliente; 
+import gameon.models.Endereco; 
 import gameon.models.BO.ClienteBO;
 import gameon.models.BO.EnderecoBO;
-import gameon.models.DTO.ClienteDTO;
-import gameon.models.DTO.EnderecoDTO;
+import gameon.models.valuesobjects.Email; 
+import gameon.models.valuesobjects.Senha;
+import gameon.models.valuesobjects.Cpf;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -31,17 +34,23 @@ public class CadastroClienteController {
     @FXML
     private void cadastrarCliente() {
         try {
-            // 1. Monta o objeto Cliente
-            ClienteDTO cli = new ClienteDTO();
+            // 1. Monta o objeto Cliente (MODEL)
+            Cliente cli = new Cliente();
             cli.setNome(txtNome.getText());
-            cli.setEmail(txtEmail.getText()); // Usa seu Value Object
-            cli.setSenha(txtSenha.getText()); // Usa seu Value Object
-            cli.setCpf(txtCpf.getText());
-            cli.setTelefone(txtTelefone.getText());
             
-            // 2. Chama o ClienteBO para inserir (Isso salva no Asaas, Usuario e Cliente)
+            // A Model exige Objetos de Valor (Value Objects), não Strings puras
+            cli.setEmail(new Email(txtEmail.getText())); 
+            cli.setSenha(new Senha(txtSenha.getText()));
+            
+            cli.setCpf(new Cpf(txtCpf.getText()));
+            cli.setTelefone(txtTelefone.getText());
+            // Define um valor temporário ou vazio se a integração com Asaas estiver desligada
+            cli.setAsaasCliente("TEMP_PENDING"); 
+
+            // 2. Chama o ClienteBO
+            // O BO agora recebe a Model, converte internamente e salva
             ClienteBO clienteBO = new ClienteBO();
-            ClienteDTO clienteSalvo = clienteBO.inserir(cli);
+            Cliente clienteSalvo = clienteBO.inserir(cli); // Retorna a Model salva (com ID)
 
             if (clienteSalvo != null) {
                 // 3. Se salvou o cliente, agora salva o endereço
@@ -50,30 +59,33 @@ public class CadastroClienteController {
                 exibirAlerta("Sucesso", "Cadastro realizado com sucesso!");
                 voltarLogin();
             } else {
-                exibirAlerta("Erro", "Não foi possível realizar o cadastro. Verifique os dados.");
+                exibirAlerta("Erro", "Não foi possível realizar o cadastro. Verifique se o email ou CPF já existem.");
             }
 
+        } catch (IllegalArgumentException e) {
+            // Captura erros de validação dos Value Objects (ex: email inválido)
+            exibirAlerta("Dados Inválidos", e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            exibirAlerta("Erro", "Falha no sistema: " + e.getMessage());
+            exibirAlerta("Erro Crítico", "Falha no sistema: " + e.getMessage());
         }
     }
 
-    private void salvarEndereco(ClienteDTO cliente) {
-        // Se você tiver EnderecoBO e EnderecoDTO implementados:
+    private void salvarEndereco(Cliente cliente) {
         try {
-            EnderecoDTO end = new EnderecoDTO();
-            end.setCodigoPostal(txtCep.getText());
+            // Monta o objeto Endereco (MODEL)
+            Endereco end = new Endereco();
+            end.setCep(txtCep.getText());
             end.setEstado(txtEstado.getText());
             end.setCidade(txtCidade.getText());
-            end.setBairro(txtBairro.getText()); // Se tiver esse campo no DTO
+            end.setBairro(txtBairro.getText());
             end.setLogradouro(txtLogradouro.getText());
             
             if (!txtNumero.getText().isEmpty()) {
                 end.setNumero(Integer.parseInt(txtNumero.getText()));
             }
             
-            // Vincula o endereço ao cliente recém-criado
+            // Vincula o endereço ao cliente (Objeto completo)
             end.setCliente(cliente);
 
             EnderecoBO enderecoBO = new EnderecoBO();

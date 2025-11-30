@@ -2,7 +2,7 @@ package gameon.models;
 
 public class Endereco {
 	private int id;
-	private String longradouro;
+	private String logradouro;
 	private int numero;
 	private String bairro;
 	private String cidade;
@@ -18,12 +18,12 @@ public class Endereco {
 		this.id = id;
 	}
 	
-	public String getLongradouro() {
-		return longradouro;
+	public String getLogradouro() {
+		return logradouro;
 	}
 	
-	public void setLongradouro(String longradouro) {
-		this.longradouro = longradouro;
+	public void setLogradouro(String longradouro) {
+		this.logradouro = longradouro;
 	}
 	
 	public int getNumero() {
@@ -80,7 +80,7 @@ public class Endereco {
 		builder.append("Endereco [id=");
 		builder.append(id);
 		builder.append(", longradouro=");
-		builder.append(longradouro);
+		builder.append(logradouro);
 		builder.append(", numero=");
 		builder.append(numero);
 		builder.append(", bairro=");

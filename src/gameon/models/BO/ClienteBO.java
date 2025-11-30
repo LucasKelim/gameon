@@ -1,185 +1,206 @@
 package gameon.models.BO;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import gameon.models.Cliente;
-import gameon.models.DAO.ClienteDAO;
-import gameon.models.DAO.UsuarioDAO;
-import gameon.models.DTO.ClienteDTO;
-import gameon.models.DTO.UsuarioDTO;
+import gameon.models.Cliente;          
+import gameon.models.Usuario;           
+import gameon.models.DAO.ClienteDAO;    
+import gameon.models.DTO.ClienteDTO;    
 import gameon.models.valuesobjects.Cpf;
+import gameon.models.valuesobjects.Email;
+import gameon.models.valuesobjects.Senha;
 import gameon.services.asaas.Asaas;
 
 public class ClienteBO {
 	
 	public Cliente inserir(Cliente cliente) {
-		
+	    validar(cliente);
+	    
+	    // 1. Verifica ANTES de criar o usuário para não gastar ID a toa
+	    ClienteDAO clienteDAO = new ClienteDAO();
+	    if (clienteDAO.cpfOuTelefoneExistem(cliente.getCpf().getCpf(), cliente.getTelefone())) {
+	        System.out.println("Erro: CPF ou Telefone já cadastrados.");
+	        return null;
+	    }
+
+	    // 2. Cria o Usuário
+	    UsuarioBO usuarioBO = new UsuarioBO();
+	    Usuario usuarioSalvo = usuarioBO.inserir(cliente);
+	    
+	    if (usuarioSalvo == null) {
+	        return null; // Falhou no usuário (Email duplicado, etc)
+	    }
+	    
+	    // Configura os dados do cliente com o ID gerado
+	    cliente.setId(usuarioSalvo.getId());
+	    cliente.setCriadoEm(usuarioSalvo.getCriadoEm());
+	    cliente.setAsaasCliente("cus_TESTE_" + System.currentTimeMillis());
+
+	    // 3. Tenta Salvar Cliente
+	    ClienteDTO dto = converterParaDTO(cliente);
+	    ClienteDTO dtoSalvo = clienteDAO.inserir(dto);
+	    
+	    if (dtoSalvo != null) {
+	        return cliente; // Sucesso!
+	    } else {
+	        // FALHA CRÍTICA: O usuário foi criado, mas o cliente não.
+	        // ROLLBACK: Apaga o usuário para não deixar lixo no banco.
+	        System.out.println("Erro ao salvar Cliente. Desfazendo usuário...");
+	        usuarioBO.excluir(usuarioSalvo); 
+	        return null;
+	    }
+	}
+	
+	public Cliente alterar(Cliente cliente) {
 		validar(cliente);
 		
-		if (!existe(cliente)) {
-	        UsuarioBO usuarioBO = new UsuarioBO();
-			UsuarioDTO usuario = usuarioBO.inserir(cliente);
-			
-			cliente.setId(usuario.getId());
-			
-			Map<String, Object> res = Asaas.inserir("customers", buildAsaasPayload(cliente));
-			
-	        if (res == null || !res.containsKey("id")) {
-	            return null;
-	        }
-	        
-	        String asaasCliente = res.get("id").toString();
-	        cliente.setAsaasCliente(asaasCliente);
-			
-			ClienteDAO clienteDAO = new ClienteDAO();
-			
-			return clienteDAO.inserir(cliente);
+		// Atualiza Asaas
+		try {
+			// Asaas.alterar(buildAsaasUrl(cliente), buildAsaasPayload(cliente));
+		} catch (Exception e) {
+			System.out.println("Erro Asaas Update: " + e.getMessage());
 		}
 		
-		return null;
+		// 1. Altera dados de Usuário
+		UsuarioBO usuarioBO = new UsuarioBO();
+		usuarioBO.alterar(cliente);
+		
+		// 2. Altera dados de Cliente
+		ClienteDTO dto = converterParaDTO(cliente);
+		ClienteDAO clienteDAO = new ClienteDAO();
+		clienteDAO.alterar(dto);
+		
+		return cliente;
 	}
 	
-//	public Cliente inserir(Cliente cliente) {
-//	    if (!existe(cliente)) {
-//	        
-//	        // --- TENTA INTEGRAR COM ASAAS, MAS NÃO TRAVA SE FALHAR ---
-//	        String asaasId = "cus_00000FAKE"; // ID Falso padrão para testes
-//	        try {
-//	            // Se você tiver a classe Asaas, ele tenta. Se não tiver configurado, dá erro mas seguimos.
-//	            // Map<String, Object> res = Asaas.inserir("customers", cliente.toAsaas());
-//	            // if (res != null && res.containsKey("id")) {
-//	            //    asaasId = res.get("id").toString();
-//	            // }
-//	            
-//	            // COMENTEI A CHAMADA REAL ACIMA.
-//	            // Para testar o banco, vamos apenas simular que deu certo:
-//	            System.out.println("Aviso: Pulando integração Asaas (Modo Teste)");
-//	            
-//	        } catch (Exception e) {
-//	            System.out.println("Erro ao conectar no Asaas, usando ID falso: " + e.getMessage());
-//	        }
-//	        
-//	        cliente.setAsaasCliente(asaasId);
-//	        // -----------------------------------------------------------
-//
-//	        UsuarioBO usuarioBO = new UsuarioBO();
-//	        
-//	        // Salva na tabela Usuario
-//	        // ATENÇÃO: O usuarioBO.inserir(usuario) retorna o ID (int) ou o Objeto?
-//	        // No seu código anterior, ele retornava um 'int'.
-//	        // Se retornar int, mude para: int novoId = usuarioBO.inserir(cliente);
-//	        // Se retornar Objeto, mantenha:
-//	        Usuario usuarioSalvo = usuarioBO.inserir(cliente);
-//	        
-//	        if (usuarioSalvo == null) {
-//	            System.out.println("Erro: Falha ao salvar Usuario (verifique o UsuarioDAO e o Console)");
-//	            return null;
-//	        }
-//
-//	        // Passa o ID gerado no Usuario para o Cliente (são a mesma chave)
-//	        cliente.setId(usuarioSalvo.getId());
-//	        
-//	        ClienteDAO clienteDAO = new ClienteDAO();
-//	        return clienteDAO.inserir(cliente);
-//	    }
-//	    
-//	    return null;
-//	}
-	
-	public ClienteDTO alterar(ClienteDTO cliente) {
+	public boolean excluir(Cliente cliente) {
+		// Remove do Asaas
+		try {
+			// Asaas.excluir(buildAsaasUrl(cliente));
+		} catch (Exception e) {
+			System.out.println("Erro Asaas Delete: " + e.getMessage());
+		}
 		
-		validar(cliente);
+		// Remove do Banco (Cliente e depois Usuário)
+		ClienteDTO dto = new ClienteDTO();
+		dto.setId(cliente.getId());
 		
-		Map<String, Object> res = Asaas.alterar(buildAsaasUrl(cliente), buildAsaasPayload(cliente));
-		
-        if (res == null || !res.containsKey("id")) {
-            return null;
-        }
-        
 		ClienteDAO clienteDAO = new ClienteDAO();
-		UsuarioDAO usuarioDAO = new UsuarioDAO();
-		
-		usuarioDAO.alterar(cliente);
-		clienteDAO.alterar(cliente);
-		
-		return procurarPorId(cliente.getId());
-	}
-	
-	public boolean excluir(ClienteDTO cliente) {
-		Map<String, Object> res = Asaas.excluir(buildAsaasUrl(cliente));
-		
-        if (res == null || !res.containsKey("id")) {
-            return false;
-        }
-        
-		ClienteDAO clienteDAO = new ClienteDAO();
-		UsuarioDAO usuarioDAO = new UsuarioDAO();
-		
-		if (clienteDAO.excluir(cliente.getId())) {
-			return usuarioDAO.excluir(cliente.getId());
+		if (clienteDAO.excluir(dto.getId())) { // Passa o ID int
+			UsuarioBO usuarioBO = new UsuarioBO();
+			return usuarioBO.excluir(cliente);
 		}
 		
 		return false;
 	}
 	
-    public ClienteDTO procurarPorId(int clienteId) {
+    public Cliente procurarPorId(int id) {
         ClienteDAO clienteDAO = new ClienteDAO();
-        UsuarioDAO usuarioDAO = new UsuarioDAO();
+        UsuarioBO usuarioBO = new UsuarioBO();
 
-        ClienteDTO cliente = clienteDAO.procurarPorId(clienteId);
-        if (cliente == null) return null;
+        // Busca dados específicos do cliente
+        ClienteDTO dto = clienteDAO.procurarPorId(id);
+        if (dto == null) return null;
 
-        UsuarioDTO usuario = usuarioDAO.procurarPorId(clienteId);
+        // Busca dados do usuário (Nome, Email...)
+        Usuario usuario = usuarioBO.procurarPorId(id);
         if (usuario == null) return null;
 
-        return cliente;
+        // Junta tudo num objeto só
+        return mergeModel(usuario, dto);
     }
     
-    public ClienteDTO procurarPorEmail(String email){
-        UsuarioDAO usuarioDAO = new UsuarioDAO();
+    // Método auxiliar importante: Junta dados de Usuario com dados de ClienteDTO
+    private Cliente mergeModel(Usuario usuario, ClienteDTO dto) {
+    	Cliente cliente = new Cliente();
+    	// Dados de Usuario
+    	cliente.setId(usuario.getId());
+    	cliente.setNome(usuario.getNome());
+    	cliente.setEmail(usuario.getEmail());
+    	cliente.setSenha(usuario.getSenha());
+    	cliente.setCriadoEm(usuario.getCriadoEm());
+    	
+    	// Dados de Cliente
+    	cliente.setCpf(new Cpf(dto.getCpf()));
+    	cliente.setTelefone(dto.getTelefone());
+    	cliente.setAsaasCliente(dto.getAsaasCliente());
+    	
+    	return cliente;
+    }
+    
+    public Cliente procurarPorEmail(String email){
+        UsuarioBO usuarioBO = new UsuarioBO();
+        Usuario usuario = usuarioBO.procurarPorEmail(email);
         
-        UsuarioDTO usuario = usuarioDAO.procurarPorEmail(email);
-        if (usuario == null) return null;
+        if (usuario != null) {
+        	return procurarPorId(usuario.getId());
+        }
         
-        ClienteDTO cliente = procurarPorId(usuario.getId());
-        
-        return cliente;
+        return null;
     }
 	
-	public boolean existe(ClienteDTO cliente) {
+	public List<Cliente> pesquisarTodos() {
 		ClienteDAO clienteDAO = new ClienteDAO();
+		UsuarioBO usuarioBO = new UsuarioBO();
 		
-		return clienteDAO.existe(cliente);
-	}
-	
-	public List<ClienteDTO> pesquisarTodos() {
-		ClienteDAO clienteDAO = new ClienteDAO();
+		List<ClienteDTO> listaDTO = clienteDAO.pesquisarTodos();
+		List<Cliente> listaModel = new ArrayList<>();
+		
+		if (listaDTO != null) {
+			for (ClienteDTO dto : listaDTO) {
+				// Para cada cliente, busca os dados de usuário correspondente
+				// Nota: Isso pode ser lento (N+1 queries). O ideal seria o DAO já fazer o JOIN.
+				// Se o seu DAO já faz JOIN e retorna tudo no DTO, melhor ainda.
+				Usuario usuario = usuarioBO.procurarPorId(dto.getId());
+				if (usuario != null) {
+					listaModel.add(mergeModel(usuario, dto));
+				}
+			}
+		}
 
-		return clienteDAO.pesquisarTodos();
+		return listaModel;
 	}
 	
-	private String buildAsaasUrl(ClienteDTO cliente) {
+	
+	public boolean existe(ClienteDTO dto) {
+		ClienteDAO clienteDAO = new ClienteDAO();
+		return clienteDAO.existe(dto);
+	}
+	
+	private void validar(Cliente cliente) {
+		if (cliente == null) throw new IllegalArgumentException("Cliente inválido");
+		
+		// O CPF já é validado pelo próprio Objeto de Valor (Cpf) na construção.
+		// Aqui validamos apenas se ele está presente.
+		if (cliente.getCpf() == null) {
+			throw new IllegalArgumentException("CPF é obrigatório");
+		}
+		
+		if (cliente.getTelefone() == null || cliente.getTelefone().isEmpty()) {
+			throw new IllegalArgumentException("Telefone é obrigatório");
+		}
+	}
+	
+	private ClienteDTO converterParaDTO(Cliente model) {
+		ClienteDTO dto = new ClienteDTO();
+		dto.setId(model.getId());
+		dto.setCpf(model.getCpf().getCpf()); 
+		dto.setTelefone(model.getTelefone());
+		dto.setAsaasCliente(model.getAsaasCliente());
+		return dto;
+	}
+	
+	private String buildAsaasUrl(Cliente cliente) {
 		return "customers/" + cliente.getAsaasCliente();
 	}
 	
-	private Map<String, Object> buildAsaasPayload(ClienteDTO cliente) {
+	private Map<String, Object> buildAsaasPayload(Cliente cliente) {
         Map<String, Object> dadosAsaas = new HashMap<>();
-        
         dadosAsaas.put("name", cliente.getNome());
-        dadosAsaas.put("cpfCnpj", cliente.getCpf());
-        
+        dadosAsaas.put("cpfCnpj", cliente.getCpf().getCpf());
         return dadosAsaas;
     }
-	
-	private void validar(ClienteDTO cliente) {
-	    try {
-	        Cpf cpfVO = new Cpf(cliente.getCpf());
-	        cliente.setCpf(cpfVO.getCpf()); 
-	        
-	    } catch (IllegalArgumentException e) {
-	        throw new IllegalArgumentException(e.getMessage());
-	    }
-	}
 }

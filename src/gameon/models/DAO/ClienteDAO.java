@@ -249,4 +249,23 @@ public class ClienteDAO {
             return null;
         }
     }
+    
+    public boolean cpfOuTelefoneExistem(String cpf, String telefone) {
+        String sql = "SELECT * FROM cliente WHERE cpf = ? OR telefone = ?";
+        try {
+            Connection conn = Conexao.conectar();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, cpf);
+            ps.setString(2, telefone);
+            ResultSet rs = ps.executeQuery();
+            
+            boolean existe = rs.next();
+            
+            ps.close(); rs.close(); conn.close();
+            return existe;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return true; // Na dúvida, bloqueia
+        }
+    }
 }
