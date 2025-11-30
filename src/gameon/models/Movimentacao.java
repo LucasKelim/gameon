@@ -1,14 +1,15 @@
-package gameon.models.DTO;
+package gameon.models;
 
 import java.time.LocalDateTime;
 
+import gameon.models.enums.TipoMovimentacao;
+
 public class Movimentacao {
 	private int id;
-	private String movimentacao;
+	private TipoMovimentacao tipo;
 	private int quantidade;
-	private int produtoId;
 	private Produto produto;
-	private LocalDateTime CriadoEm;
+	private LocalDateTime criadoEm;
 	
 	public int getId() {
 		return id;
@@ -18,12 +19,12 @@ public class Movimentacao {
 		this.id = id;
 	}
 	
-	public String getMovimentacao() {
-		return movimentacao;
+	public TipoMovimentacao getTipo() {
+		return tipo;
 	}
 	
-	public void setMovimentacao(String movimentacao) {
-		this.movimentacao = movimentacao;
+	public void setTipo(TipoMovimentacao tipo) {
+		this.tipo = tipo;
 	}
 	
 	public int getQuantidade() {
@@ -32,14 +33,6 @@ public class Movimentacao {
 	
 	public void setQuantidade(int quantidade) {
 		this.quantidade = quantidade;
-	}
-	
-	public int getProdutoId() {
-		return produtoId;
-	}
-	
-	public void setProdutoId(int produtoId) {
-		this.produtoId = produtoId;
 	}
 	
 	public Produto getProduto() {
@@ -51,29 +44,27 @@ public class Movimentacao {
 	}
 	
 	public LocalDateTime getCriadoEm() {
-		return CriadoEm;
+		return criadoEm;
 	}
 	
 	public void setCriadoEm(LocalDateTime criadoEm) {
-		CriadoEm = criadoEm;
+		this.criadoEm = criadoEm;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("MovimentacaoDTO [id=");
+		builder.append("Movimentacao [id=");
 		builder.append(id);
-		builder.append(", movimentacao=");
-		builder.append(movimentacao);
+		builder.append(", tipo=");
+		builder.append(tipo);
 		builder.append(", quantidade=");
 		builder.append(quantidade);
-		builder.append(", produto=");
+		builder.append(", ");
 		builder.append(produto);
-		builder.append(", CriadoEm=");
-		builder.append(CriadoEm);
+		builder.append(", criadoEm=");
+		builder.append(criadoEm);
 		builder.append("]");
 		return builder.toString();
 	}
-	
-	
 }

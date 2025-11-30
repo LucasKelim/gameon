@@ -5,13 +5,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import gameon.models.DTO.Cliente;
+import gameon.models.DTO.ClienteDTO;
 import gameon.utils.Conexao;
 
 public class ClienteDAO {
     final String NOMEDATABELA = "cliente";
     
-    public Cliente inserir(Cliente cliente) {
+    public ClienteDTO inserir(ClienteDTO cliente) {
     	String sql = "INSERT INTO " + NOMEDATABELA + " (id, cpf, telefone, asaasCliente) VALUES (?, ?, ?, ?);";
     	
         try {
@@ -39,7 +39,7 @@ public class ClienteDAO {
         }
     }
     
-    public Cliente alterar(Cliente cliente) {
+    public ClienteDTO alterar(ClienteDTO cliente) {
     	String sql = "UPDATE " + NOMEDATABELA + " SET cpf = ?, telefone = ? WHERE id = ?;";
     	
         try {
@@ -83,7 +83,7 @@ public class ClienteDAO {
         }
     }
     
-    public Cliente procurarPorId(int clienteId) {
+    public ClienteDTO procurarPorId(int clienteId) {
     	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ?";
     	
         try {
@@ -94,7 +94,7 @@ public class ClienteDAO {
             
             ResultSet rs = ps.executeQuery();
             
-            Cliente cliente = null;
+            ClienteDTO cliente = null;
             if (rs.next()) {
             	cliente = montarCliente(rs);
             }
@@ -110,7 +110,7 @@ public class ClienteDAO {
         }
     }
     
-    public Cliente procurarPorCpf(String clienteCpf) {
+    public ClienteDTO procurarPorCpf(String clienteCpf) {
     	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE cpf = ?;";
     	
         try {
@@ -121,7 +121,7 @@ public class ClienteDAO {
             
             ResultSet rs = ps.executeQuery();
             
-            Cliente cliente = null;
+            ClienteDTO cliente = null;
             if (rs.next()) {
             	cliente = montarCliente(rs);
             }
@@ -137,7 +137,7 @@ public class ClienteDAO {
         }
     }
     
-    public Cliente procurarPorAsaasId(String clienteAsaasId) {
+    public ClienteDTO procurarPorAsaasId(String clienteAsaasId) {
     	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE asaasCliente = ?;";
     	
         try {
@@ -148,7 +148,7 @@ public class ClienteDAO {
             
             ResultSet rs = ps.executeQuery();
             
-            Cliente cliente = null;
+            ClienteDTO cliente = null;
             if (rs.next()) {
             	cliente = montarCliente(rs);
             }
@@ -164,7 +164,7 @@ public class ClienteDAO {
         }
     }
     
-    public boolean existe(Cliente cliente) {
+    public boolean existe(ClienteDTO cliente) {
     	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ? OR cpf = ? OR asaasCliente = ? OR telefone = ?;";
     	
         try {
@@ -194,7 +194,7 @@ public class ClienteDAO {
         }
     }
     
-    public List<Cliente> pesquisarTodos() {
+    public List<ClienteDTO> pesquisarTodos() {
     	String sql = "SELECT * FROM " + NOMEDATABELA + ";";
     	
         try {
@@ -203,7 +203,7 @@ public class ClienteDAO {
             
             ResultSet rs = ps.executeQuery();
             
-            List<Cliente> listObj = montarLista(rs);
+            List<ClienteDTO> listObj = montarLista(rs);
             
             ps.close();
             rs.close();
@@ -216,11 +216,11 @@ public class ClienteDAO {
         }
     }
     
-    public List<Cliente> montarLista(ResultSet rs) {
-        List<Cliente> clientes = new ArrayList<Cliente>();
+    public List<ClienteDTO> montarLista(ResultSet rs) {
+        List<ClienteDTO> clientes = new ArrayList<ClienteDTO>();
         
         try {
-        	Cliente cliente = null;
+        	ClienteDTO cliente = null;
         	
             while (rs.next()) {
             	cliente = montarCliente(rs);
@@ -234,9 +234,9 @@ public class ClienteDAO {
         }
     }
     
-    private Cliente montarCliente(ResultSet rs) {
+    private ClienteDTO montarCliente(ResultSet rs) {
         try {
-            Cliente cliente = new Cliente();
+            ClienteDTO cliente = new ClienteDTO();
             
             cliente.setId(rs.getInt("id"));
             cliente.setCpf(rs.getString("cpf"));

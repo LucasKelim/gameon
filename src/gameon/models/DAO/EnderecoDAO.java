@@ -6,14 +6,14 @@ import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import gameon.models.DTO.Endereco;
+import gameon.models.DTO.EnderecoDTO;
 import gameon.utils.Conexao;
 
 public class EnderecoDAO {
 
     final String NOMEDATABELA = "endereco";
     
-    public Endereco inserir(Endereco endereco) {
+    public EnderecoDTO inserir(EnderecoDTO endereco) {
     	String sql = "INSERT INTO " + NOMEDATABELA + " (logradouro, numero, bairro, cidade, cep, estado, clienteId) VALUES (?, ?, ?, ?, ?, ?, ?);";
     	
         try {
@@ -26,7 +26,7 @@ public class EnderecoDAO {
             ps.setString(4, endereco.getCidade());
             ps.setString(5, endereco.getCodigoPostal());
             ps.setString(6, endereco.getEstado());
-            ps.setInt(7, endereco.getCliente().getId());
+            ps.setInt(7, endereco.getClienteId());
 
         	int rows = ps.executeUpdate();
             
@@ -51,7 +51,7 @@ public class EnderecoDAO {
         }
     }
     
-    public Endereco alterar(Endereco endereco) {
+    public EnderecoDTO alterar(EnderecoDTO endereco) {
     	String sql = "UPDATE " + NOMEDATABELA + " SET logradouro = ?, numero = ?, bairro = ?, cidade = ?, cep = ?, estado = ? WHERE id = ?;";
     	
         try {
@@ -99,7 +99,7 @@ public class EnderecoDAO {
         }
     }
     
-    public Endereco procurarPorId(int enderecoId) {
+    public EnderecoDTO procurarPorId(int enderecoId) {
     	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ?;";
     	
         try {
@@ -110,7 +110,7 @@ public class EnderecoDAO {
             
             ResultSet rs = ps.executeQuery();
             
-            Endereco endereco = null;
+            EnderecoDTO endereco = null;
             if (rs.next()) {
             	endereco = montarEndereco(rs);
             }
@@ -126,7 +126,31 @@ public class EnderecoDAO {
         }
     }
     
-    public boolean existe(Endereco endereco) {
+    public List<EnderecoDTO> procurarPorClienteId(int clienteId) {
+    	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE clienteId = ?;";
+    	
+        try {
+            Connection conn = Conexao.conectar();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            
+            ps.setInt(1, clienteId);
+            
+            ResultSet rs = ps.executeQuery();
+            
+            List<EnderecoDTO> enderecos = montarLista(rs);
+            
+            ps.close();
+            rs.close();
+            conn.close();
+            
+            return enderecos;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    public boolean existe(EnderecoDTO endereco) {
     	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ?;";
     	
         try {
@@ -153,7 +177,7 @@ public class EnderecoDAO {
         }
     }
     
-    public List<Endereco> pesquisarTodos() {
+    public List<EnderecoDTO> pesquisarTodos() {
     	String sql = "SELECT * FROM " + NOMEDATABELA + ";";
     	
         try {
@@ -162,7 +186,7 @@ public class EnderecoDAO {
             
             ResultSet rs = ps.executeQuery();
             
-            List<Endereco> enderecos = montarLista(rs);
+            List<EnderecoDTO> enderecos = montarLista(rs);
             
             ps.close();
             rs.close();
@@ -175,10 +199,11 @@ public class EnderecoDAO {
         }
     }
     
-    private List<Endereco> montarLista(ResultSet rs) {
-        List<Endereco> enderecos = new ArrayList<Endereco>();
+    private List<EnderecoDTO> montarLista(ResultSet rs) {
+        List<EnderecoDTO> enderecos = new ArrayList<EnderecoDTO>();
+        
         try {
-        	Endereco endereco = null;
+        	EnderecoDTO endereco = null;
 
             while (rs.next()) {
             	endereco = montarEndereco(rs);
@@ -192,9 +217,9 @@ public class EnderecoDAO {
         }
     }
     
-    private Endereco montarEndereco(ResultSet rs) {
+    private EnderecoDTO montarEndereco(ResultSet rs) {
         try {
-            Endereco endereco = new Endereco();
+            EnderecoDTO endereco = new EnderecoDTO();
             
             Timestamp timestamp = rs.getTimestamp("criadoEm");
             

@@ -1,8 +1,8 @@
 package gameon.controllers;
 
 import gameon.models.BO.ProdutoBO;
-import gameon.models.DTO.CarrinhoProduto;
-import gameon.models.DTO.Produto;
+import gameon.models.DTO.CarrinhoProdutoDTO;
+import gameon.models.DTO.ProdutoDTO;
 import gameon.utils.SessaoUsuario;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -23,11 +23,11 @@ import java.util.List;
 
 public class CatalogoController {
 
-    @FXML private TableView<Produto> tabelaProdutos;
-    @FXML private TableColumn<Produto, String> colNome;
-    @FXML private TableColumn<Produto, String> colDescricao;
-    @FXML private TableColumn<Produto, Number> colPreco;
-    @FXML private TableColumn<Produto, Number> colEstoque;
+    @FXML private TableView<ProdutoDTO> tabelaProdutos;
+    @FXML private TableColumn<ProdutoDTO, String> colNome;
+    @FXML private TableColumn<ProdutoDTO, String> colDescricao;
+    @FXML private TableColumn<ProdutoDTO, Number> colPreco;
+    @FXML private TableColumn<ProdutoDTO, Number> colEstoque;
     @FXML private Label lblMensagem;
 
     @FXML
@@ -47,10 +47,10 @@ public class CatalogoController {
     private void carregarDados() {
         try {
             ProdutoBO produtoBO = new ProdutoBO();
-            List<Produto> listaProdutos = produtoBO.pesquisarTodos(); // Chama o seu DAO via BO
+            List<ProdutoDTO> listaProdutos = produtoBO.pesquisarTodos(); // Chama o seu DAO via BO
             
             if (listaProdutos != null) {
-                ObservableList<Produto> observableList = FXCollections.observableArrayList(listaProdutos);
+                ObservableList<ProdutoDTO> observableList = FXCollections.observableArrayList(listaProdutos);
                 tabelaProdutos.setItems(observableList);
             }
         } catch (Exception e) {
@@ -63,7 +63,7 @@ public class CatalogoController {
     @FXML
     public void adicionarAoCarrinho() {
         // Pega o item selecionado na tabela
-        Produto produtoSelecionado = tabelaProdutos.getSelectionModel().getSelectedItem();
+        ProdutoDTO produtoSelecionado = tabelaProdutos.getSelectionModel().getSelectedItem();
 
         if (produtoSelecionado == null) {
             mostrarAlerta("Atenção", "Selecione um produto na tabela para adicionar.");
@@ -82,12 +82,12 @@ public class CatalogoController {
         lblMensagem.setStyle("-fx-text-fill: green;");
     }
 
-    private void adicionarNaSessao(Produto produto) {
-        List<CarrinhoProduto> carrinho = SessaoUsuario.getInstancia().getCarrinhoAtual().getProdutos();
+    private void adicionarNaSessao(ProdutoDTO produto) {
+        List<CarrinhoProdutoDTO> carrinho = SessaoUsuario.getInstancia().getCarrinhoAtual().getProdutos();
         
         // Verifica se o produto já está no carrinho para apenas aumentar a quantidade
         boolean jaExiste = false;
-        for (CarrinhoProduto item : carrinho) {
+        for (CarrinhoProdutoDTO item : carrinho) {
             if (item.getProduto().getId() == produto.getId()) {
                 item.setQuantidade(item.getQuantidade() + 1);
                 jaExiste = true;
@@ -97,7 +97,7 @@ public class CatalogoController {
 
         // Se não existe, cria um novo item
         if (!jaExiste) {
-            CarrinhoProduto novoItem = new CarrinhoProduto();
+            CarrinhoProdutoDTO novoItem = new CarrinhoProdutoDTO();
             novoItem.setProduto(produto);
             novoItem.setQuantidade(1);
             carrinho.add(novoItem);

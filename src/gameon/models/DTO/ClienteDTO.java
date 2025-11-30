@@ -1,10 +1,17 @@
 package gameon.models.DTO;
 
-public class Cliente extends Usuario {
+public class ClienteDTO {
+	private int id;
 	private String cpf;
 	private String telefone;
 	private String asaasCliente;
 	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 	public String getCpf() {
 		return cpf;
 	}
@@ -27,14 +34,14 @@ public class Cliente extends Usuario {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("Cliente [cpf=");
+		builder.append("Cliente [id=");
+		builder.append(id);
+		builder.append(", cpf=");
 		builder.append(cpf);
 		builder.append(", telefone=");
 		builder.append(telefone);
 		builder.append(", asaasCliente=");
 		builder.append(asaasCliente);
-		builder.append(", ");
-		builder.append(super.toString());
 		builder.append("]");
 		return builder.toString();
 	}

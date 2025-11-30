@@ -1,14 +1,14 @@
 package gameon;
 
 import gameon.models.BO.ClienteBO;
-import gameon.models.DTO.Cliente;
+import gameon.models.DTO.ClienteDTO;
 
 public class MainClienteProcurarPorEmail {
 
 	public static void main(String[] args) {
 		
 		ClienteBO clienteBO = new ClienteBO();
-		Cliente cliente = new Cliente();
+		ClienteDTO cliente = new ClienteDTO();
 		
 		cliente.setEmail("lucas2@gmail.com");
 		

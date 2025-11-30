@@ -6,14 +6,14 @@ import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import gameon.models.DTO.Ordem;
+import gameon.models.DTO.OrdemDTO;
 import gameon.utils.Conexao;
 
 public class OrdemDAO {
 
     final String NOMEDATABELA = "ordem";
     
-    public Ordem inserir(Ordem ordem) {
+    public OrdemDTO inserir(OrdemDTO ordem) {
     	String sql = "INSERT INTO " + NOMEDATABELA + " (status, metodoPagamento, valorTotal, enderecoId, asaasOrdem) VALUES (?, ?, ?, ?, ?);";
     	
         try {
@@ -23,7 +23,7 @@ public class OrdemDAO {
             ps.setString(1, ordem.getStatus().toString());
             ps.setString(2, ordem.getMetodoPagamento());
             ps.setDouble(3, ordem.getValorTotal());
-            ps.setInt(4, ordem.getEndereco().getId());
+            ps.setInt(4, ordem.getEnderecoId());
             ps.setString(5, ordem.getAsaasOrdem());
             
         	int rows = ps.executeUpdate();
@@ -49,7 +49,7 @@ public class OrdemDAO {
         }
     }
     
-    public Ordem alterar(Ordem ordem) {
+    public OrdemDTO alterar(OrdemDTO ordem) {
     	String sql = "UPDATE " + NOMEDATABELA + " SET status = ?, metodoPagamento = ?, valorTotal = ?, enderecoId = ?, asaasOrdem = ? WHERE id = ?;";
     	
         try {
@@ -59,7 +59,7 @@ public class OrdemDAO {
             ps.setString(1, ordem.getStatus());
             ps.setString(2, ordem.getMetodoPagamento());
             ps.setDouble(3, ordem.getValorTotal());
-            ps.setInt(4, ordem.getEndereco().getId());
+            ps.setInt(4, ordem.getEnderecoId());
             ps.setString(5, ordem.getAsaasOrdem());
             ps.setInt(6, ordem.getId());
             
@@ -96,7 +96,7 @@ public class OrdemDAO {
         }
     }
     
-    public Ordem procurarPorId(int ordemId) {
+    public OrdemDTO procurarPorId(int ordemId) {
     	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ?;";
     	
         try {
@@ -107,7 +107,7 @@ public class OrdemDAO {
             
             ResultSet rs = ps.executeQuery();
             
-            Ordem ordem = null;
+            OrdemDTO ordem = null;
             if (rs.next()) {
             	ordem = montarOrdem(rs);
             }
@@ -123,7 +123,7 @@ public class OrdemDAO {
         }
     }
     
-    public List<Ordem> procurarPorClienteId(int clienteId) {
+    public List<OrdemDTO> procurarPorClienteId(int clienteId) {
         try {
             Connection conn = Conexao.conectar();
             String sql = "SELECT o.* FROM " + NOMEDATABELA + " o " +
@@ -132,7 +132,7 @@ public class OrdemDAO {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, clienteId);
             ResultSet rs = ps.executeQuery();
-            List<Ordem> listObj = montarLista(rs);
+            List<OrdemDTO> listObj = montarLista(rs);
             ps.close();
             rs.close();
             conn.close();
@@ -143,7 +143,7 @@ public class OrdemDAO {
         }
     }
     
-    public List<Ordem> procurarPorStatus(String status) {
+    public List<OrdemDTO> procurarPorStatus(String status) {
     	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE status = ? ORDER BY criadoEm DESC;";
     	
         try {
@@ -154,7 +154,7 @@ public class OrdemDAO {
             
             ResultSet rs = ps.executeQuery();
             
-            List<Ordem> ordens = montarLista(rs);
+            List<OrdemDTO> ordens = montarLista(rs);
             
             ps.close();
             rs.close();
@@ -167,7 +167,7 @@ public class OrdemDAO {
         }
     }
     
-    public boolean existe(Ordem ordem) {
+    public boolean existe(OrdemDTO ordem) {
     	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ?;";
     	
         try {
@@ -194,7 +194,7 @@ public class OrdemDAO {
         }
     }
     
-    public List<Ordem> pesquisarTodos() {
+    public List<OrdemDTO> pesquisarTodos() {
     	String sql = "SELECT * FROM " + NOMEDATABELA + " ORDER BY criadoEm DESC;";
     	
         try {
@@ -203,7 +203,7 @@ public class OrdemDAO {
             
             ResultSet rs = ps.executeQuery();
             
-            List<Ordem> ordens = montarLista(rs);
+            List<OrdemDTO> ordens = montarLista(rs);
             
             ps.close();
             rs.close();
@@ -216,11 +216,11 @@ public class OrdemDAO {
         }
     }
     
-    private List<Ordem> montarLista(ResultSet rs) {
-        List<Ordem> ordens = new ArrayList<Ordem>();
+    private List<OrdemDTO> montarLista(ResultSet rs) {
+        List<OrdemDTO> ordens = new ArrayList<OrdemDTO>();
         
         try {
-        	Ordem ordem = null;
+        	OrdemDTO ordem = null;
         	
             while (rs.next()) {
             	ordem = montarOrdem(rs);
@@ -234,9 +234,9 @@ public class OrdemDAO {
         }
     }
     
-    private Ordem montarOrdem(ResultSet rs) {
+    private OrdemDTO montarOrdem(ResultSet rs) {
         try {
-            Ordem ordem = new Ordem();
+            OrdemDTO ordem = new OrdemDTO();
           
             Timestamp timestamp = rs.getTimestamp("criadoEm");
          

@@ -5,14 +5,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import gameon.models.DTO.Admin;
+import gameon.models.DTO.AdminDTO;
 import gameon.utils.Conexao;
 
 public class AdminDAO {
 
     final String NOMEDATABELA = "admin";
     
-    public Admin inserir(Admin admin) {
+    public AdminDTO inserir(AdminDTO admin) {
     	String sql = "INSERT INTO " + NOMEDATABELA + " (id) VALUES (?);";
     	
         try {
@@ -37,24 +37,26 @@ public class AdminDAO {
         }
     }
     
-    public boolean alterar(Admin admin) {
-    	String sql = "UPDATE usuario SET nome = ?, email = ?, senha = ? WHERE id = ?;";
+    public boolean alterar(AdminDTO admin) {
+//    	String sql = "UPDATE usuario SET nome = ?, email = ?, senha = ? WHERE id = ?;";
+//    	
+//        try {
+//            Connection conn = Conexao.conectar();
+//            PreparedStatement ps = conn.prepareStatement(sql);
+//            ps.setString(1, admin.getNome());
+//            ps.setString(2, admin.getEmail());
+//            ps.setString(3, admin.getSenha());
+//            ps.setInt(4, admin.getId());
+//            ps.executeUpdate();
+//            ps.close();
+//            conn.close();
+//            return true;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return false;
+//        }
     	
-        try {
-            Connection conn = Conexao.conectar();
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, admin.getNome());
-            ps.setString(2, admin.getEmail());
-            ps.setString(3, admin.getSenha());
-            ps.setInt(4, admin.getId());
-            ps.executeUpdate();
-            ps.close();
-            conn.close();
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+    	return false;
     }
     
     public boolean excluir(int adminId) {
@@ -78,7 +80,7 @@ public class AdminDAO {
         }
     }
     
-    public Admin procurarPorId(int adminId) {
+    public AdminDTO procurarPorId(int adminId) {
     	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ?;";
     	
         try {
@@ -89,7 +91,7 @@ public class AdminDAO {
             
             ResultSet rs = ps.executeQuery();
             
-            Admin admin = null;
+            AdminDTO admin = null;
             if (rs.next()) {
             	admin = montarAdmin(rs);
             }
@@ -105,7 +107,7 @@ public class AdminDAO {
         }
     }
     
-    public boolean existe(Admin admin) {
+    public boolean existe(AdminDTO admin) {
     	String sql = "SELECT * FROM admin WHERE id = ?;";
     	
         try {
@@ -132,7 +134,7 @@ public class AdminDAO {
         }
     }
     
-    public List<Admin> pesquisarTodos() {
+    public List<AdminDTO> pesquisarTodos() {
     	String sql = "SELECT * FROM " + NOMEDATABELA + ";";
     	
         try {
@@ -141,7 +143,7 @@ public class AdminDAO {
             
             ResultSet rs = ps.executeQuery();
             
-            List<Admin> admins = montarLista(rs);
+            List<AdminDTO> admins = montarLista(rs);
             
             ps.close();
             rs.close();
@@ -154,11 +156,11 @@ public class AdminDAO {
         }
     }
     
-    private List<Admin> montarLista(ResultSet rs) {
-        List<Admin> admins = new ArrayList<Admin>();
+    private List<AdminDTO> montarLista(ResultSet rs) {
+        List<AdminDTO> admins = new ArrayList<AdminDTO>();
         
         try {
-        	Admin admin = null;
+        	AdminDTO admin = null;
         	
             while (rs.next()) {
             	admin = montarAdmin(rs);
@@ -172,9 +174,9 @@ public class AdminDAO {
         }
     }
     
-    private Admin montarAdmin(ResultSet rs) {
+    private AdminDTO montarAdmin(ResultSet rs) {
         try {
-            Admin admin = new Admin();
+            AdminDTO admin = new AdminDTO();
             
             admin.setId(rs.getInt("id"));
             

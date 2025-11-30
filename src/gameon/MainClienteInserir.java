@@ -1,14 +1,14 @@
 package gameon;
 
 import gameon.models.BO.ClienteBO;
-import gameon.models.DTO.Cliente;
+import gameon.models.DTO.ClienteDTO;
 
 public class MainClienteInserir {
 
 	public static void main(String[] args) {
 		
 		ClienteBO clienteBO = new ClienteBO();
-		Cliente cliente = new Cliente();
+		ClienteDTO cliente = new ClienteDTO();
 		cliente.setNome("Lucas");
 		cliente.setEmail("lucas2@gmail.com");
 		cliente.setCpf("105.712.719-10");

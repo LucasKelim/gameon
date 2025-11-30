@@ -1,12 +1,11 @@
 package gameon.models.DTO;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
-public class Carrinho {
+public class CarrinhoProdutoDTO {
 	private int id;
-	private Cliente cliente;
-	private List<CarrinhoProduto> produtos;
+	private int quantidade;
+	private int produtoId;
 	private LocalDateTime criadoEm;
 	
 	public int getId() {
@@ -15,17 +14,17 @@ public class Carrinho {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public Cliente getCliente() {
-		return cliente;
+	public int getQuantidade() {
+		return quantidade;
 	}
-	public void setCliente(Cliente cliente) {
-		this.cliente = cliente;
+	public void setQuantidade(int quantidade) {
+		this.quantidade = quantidade;
 	}
-	public List<CarrinhoProduto> getProdutos() {
-		return produtos;
+	public int getProduto() {
+		return produtoId;
 	}
-	public void setProdutos(List<CarrinhoProduto> produtos) {
-		this.produtos = produtos;
+	public void setProduto(int produtoId) {
+		this.produtoId = produtoId;
 	}
 	public LocalDateTime getCriadoEm() {
 		return criadoEm;
@@ -37,18 +36,17 @@ public class Carrinho {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("CarrinhoDTO [id=");
+		builder.append("CarrinhoProduto [id=");
 		builder.append(id);
-		builder.append(", cliente=");
-		builder.append(cliente);
-		builder.append(", produtos=");
-		builder.append(produtos);
+		builder.append(", quantidade=");
+		builder.append(quantidade);
+		builder.append(", produtoId=");
+		builder.append(produtoId);
 		builder.append(", criadoEm=");
 		builder.append(criadoEm);
 		builder.append("]");
 		return builder.toString();
 	}
-	
 	
 	
 }

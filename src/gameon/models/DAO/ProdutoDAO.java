@@ -6,14 +6,14 @@ import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import gameon.models.DTO.Produto;
+import gameon.models.DTO.ProdutoDTO;
 import gameon.utils.Conexao;
 
 public class ProdutoDAO {
 
     final String NOMEDATABELA = "produto";
     
-    public Produto inserir(Produto produto) {
+    public ProdutoDTO inserir(ProdutoDTO produto) {
     	String sql = "INSERT INTO " + NOMEDATABELA + " (nome, descricao, preco, estoque, status, adminId) VALUES (?, ?, ?, ?, ?, ?);";
     	
         try {
@@ -25,7 +25,7 @@ public class ProdutoDAO {
             ps.setDouble(3, produto.getPreco());
             ps.setInt(4, produto.getEstoque());
             ps.setBoolean(5, produto.getStatus());
-            ps.setInt(6, produto.getAdmin().getId());
+            ps.setInt(6, produto.getAdminId());
             
             int rows = ps.executeUpdate();
             
@@ -50,7 +50,7 @@ public class ProdutoDAO {
         }
     }
     
-    public Produto alterar(Produto produto) {
+    public ProdutoDTO alterar(ProdutoDTO produto) {
     	String sql = "UPDATE " + NOMEDATABELA + " SET nome = ?, descricao = ?, preco = ?, estoque = ?, status = ?, adminId = ? WHERE id = ?;";
     	
         try {
@@ -62,7 +62,7 @@ public class ProdutoDAO {
             ps.setDouble(3, produto.getPreco());
             ps.setInt(4, produto.getEstoque());
             ps.setBoolean(5, produto.getStatus());
-            ps.setInt(6, produto.getAdmin().getId());
+            ps.setInt(6, produto.getAdminId());
             ps.setInt(7, produto.getId());
             
             ps.executeUpdate();
@@ -98,7 +98,7 @@ public class ProdutoDAO {
         }
     }
     
-    public Produto procurarPorId(int produtoId) {
+    public ProdutoDTO procurarPorId(int produtoId) {
     	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ?;";
     	
         try {
@@ -109,7 +109,7 @@ public class ProdutoDAO {
             
             ResultSet rs = ps.executeQuery();
             
-            Produto produto = null;
+            ProdutoDTO produto = null;
             if (rs.next()) {	
                 produto = montarProduto(rs);
             }
@@ -125,7 +125,7 @@ public class ProdutoDAO {
         }
     }
     
-    public Produto procurarPorNome(String produtoNome) {
+    public ProdutoDTO procurarPorNome(String produtoNome) {
     	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE nome = ?;";
     	
         try {
@@ -136,7 +136,7 @@ public class ProdutoDAO {
             
             ResultSet rs = ps.executeQuery();
             
-            Produto produto = null;
+            ProdutoDTO produto = null;
             if (rs.next()) {
                 produto = montarProduto(rs);
             }
@@ -152,7 +152,7 @@ public class ProdutoDAO {
         }
     }
     
-    public boolean existe(Produto produto) {
+    public boolean existe(ProdutoDTO produto) {
     	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE nome = ?;";
     	
         try {
@@ -179,7 +179,7 @@ public class ProdutoDAO {
         }
     }
     
-    public List<Produto> pesquisarTodos() {
+    public List<ProdutoDTO> pesquisarTodos() {
     	String sql = "SELECT * FROM " + NOMEDATABELA + ";";
     	
         try {
@@ -188,7 +188,7 @@ public class ProdutoDAO {
             
             ResultSet rs = ps.executeQuery();
             
-            List<Produto> produtos = montarLista(rs);
+            List<ProdutoDTO> produtos = montarLista(rs);
             
             return produtos;
         } catch (Exception e) {
@@ -197,11 +197,11 @@ public class ProdutoDAO {
         }
     }
     
-    public List<Produto> montarLista(ResultSet rs) {
-        List<Produto> produtos = new ArrayList<Produto>();
+    public List<ProdutoDTO> montarLista(ResultSet rs) {
+        List<ProdutoDTO> produtos = new ArrayList<ProdutoDTO>();
         
         try {
-        	Produto produto = null;
+        	ProdutoDTO produto = null;
         	
             while (rs.next()) {
             	produto = montarProduto(rs);
@@ -215,9 +215,9 @@ public class ProdutoDAO {
         }
     }
     
-    private Produto montarProduto(ResultSet rs) {
+    private ProdutoDTO montarProduto(ResultSet rs) {
         try {
-        	Produto produto = new Produto();
+        	ProdutoDTO produto = new ProdutoDTO();
         	
         	Timestamp timestamp = rs.getTimestamp("criadoEm");
             

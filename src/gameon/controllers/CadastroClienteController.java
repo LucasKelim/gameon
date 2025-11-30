@@ -2,10 +2,8 @@ package gameon.controllers;
 
 import gameon.models.BO.ClienteBO;
 import gameon.models.BO.EnderecoBO;
-import gameon.models.DTO.Cliente;
-import gameon.models.DTO.Endereco;
-import gameon.models.valuesobjects.Email;
-import gameon.models.valuesobjects.Senha;
+import gameon.models.DTO.ClienteDTO;
+import gameon.models.DTO.EnderecoDTO;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -34,16 +32,16 @@ public class CadastroClienteController {
     private void cadastrarCliente() {
         try {
             // 1. Monta o objeto Cliente
-            Cliente cli = new Cliente();
+            ClienteDTO cli = new ClienteDTO();
             cli.setNome(txtNome.getText());
-            cli.setEmail(new Email(txtEmail.getText())); // Usa seu Value Object
-            cli.setSenha(new Senha(txtSenha.getText())); // Usa seu Value Object
+            cli.setEmail(txtEmail.getText()); // Usa seu Value Object
+            cli.setSenha(txtSenha.getText()); // Usa seu Value Object
             cli.setCpf(txtCpf.getText());
             cli.setTelefone(txtTelefone.getText());
             
             // 2. Chama o ClienteBO para inserir (Isso salva no Asaas, Usuario e Cliente)
             ClienteBO clienteBO = new ClienteBO();
-            Cliente clienteSalvo = clienteBO.inserir(cli);
+            ClienteDTO clienteSalvo = clienteBO.inserir(cli);
 
             if (clienteSalvo != null) {
                 // 3. Se salvou o cliente, agora salva o endereço
@@ -61,10 +59,10 @@ public class CadastroClienteController {
         }
     }
 
-    private void salvarEndereco(Cliente cliente) {
+    private void salvarEndereco(ClienteDTO cliente) {
         // Se você tiver EnderecoBO e EnderecoDTO implementados:
         try {
-            Endereco end = new Endereco();
+            EnderecoDTO end = new EnderecoDTO();
             end.setCodigoPostal(txtCep.getText());
             end.setEstado(txtEstado.getText());
             end.setCidade(txtCidade.getText());

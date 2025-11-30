@@ -1,7 +1,7 @@
 package gameon.utils;
 
 import gameon.models.DTO.Carrinho;
-import gameon.models.DTO.Usuario;
+import gameon.models.DTO.UsuarioDTO;
 import java.util.ArrayList;
 
 public class SessaoUsuario {
@@ -9,7 +9,7 @@ public class SessaoUsuario {
     // Instância única da classe (Padrão Singleton)
     private static SessaoUsuario instancia;
     
-    private Usuario usuarioLogado;
+    private UsuarioDTO usuarioLogado;
     private Carrinho carrinhoAtual;
 
     // Construtor privado para ninguém dar "new SessaoUsuario()" fora daqui
@@ -26,11 +26,11 @@ public class SessaoUsuario {
         return instancia;
     }
 
-    public Usuario getUsuarioLogado() {
+    public UsuarioDTO getUsuarioLogado() {
         return usuarioLogado;
     }
 
-    public void setUsuarioLogado(Usuario usuarioLogado) {
+    public void setUsuarioLogado(UsuarioDTO usuarioLogado) {
         this.usuarioLogado = usuarioLogado;
     }
 

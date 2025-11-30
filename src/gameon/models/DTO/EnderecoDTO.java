@@ -2,7 +2,7 @@ package gameon.models.DTO;
 
 import java.time.LocalDateTime;
 
-public class Endereco {
+public class EnderecoDTO {
 	private int id;
 	private String logradouro;
 	private int numero;
@@ -11,7 +11,7 @@ public class Endereco {
 	private String pais;
 	private String estado;
 	private String cidade;
-	private Cliente cliente;
+	private int clienteId;
 
 	private LocalDateTime criadoEm;
 	
@@ -63,11 +63,11 @@ public class Endereco {
 	public void setCidade(String cidade) {
 		this.cidade = cidade;
 	}
-	public Cliente getCliente() {
-		return cliente;
+	public int getClienteId() {
+		return clienteId;
 	}
-	public void setCliente(Cliente cliente) {
-		this.cliente = cliente;
+	public void setClienteId(int clienteId) {
+		this.clienteId = clienteId;
 	}
 	public LocalDateTime getCriadoEm() {
 		return criadoEm;
@@ -79,12 +79,14 @@ public class Endereco {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("EnderecoDTO [id=");
+		builder.append("Endereco [id=");
 		builder.append(id);
 		builder.append(", logradouro=");
 		builder.append(logradouro);
 		builder.append(", numero=");
 		builder.append(numero);
+		builder.append(", bairro=");
+		builder.append(bairro);
 		builder.append(", codigoPostal=");
 		builder.append(codigoPostal);
 		builder.append(", pais=");
@@ -93,8 +95,8 @@ public class Endereco {
 		builder.append(estado);
 		builder.append(", cidade=");
 		builder.append(cidade);
-		builder.append(", cliente=");
-		builder.append(cliente);
+		builder.append(", clienteId=");
+		builder.append(clienteId);
 		builder.append(", criadoEm=");
 		builder.append(criadoEm);
 		builder.append("]");

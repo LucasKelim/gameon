@@ -7,13 +7,13 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import gameon.models.DTO.Movimentacao;
+import gameon.models.DTO.MovimentacaoDTO;
 import gameon.utils.Conexao;
 
 public class MovimentacaoDAO {
 	final String NOMEDATABELA = "movimentacao";
     
-    public Movimentacao inserir(Movimentacao movimentacao) {
+    public MovimentacaoDTO inserir(MovimentacaoDTO movimentacao) {
     	String sql = "INSERT INTO " + NOMEDATABELA + " (tipo, quantidade, produtoId) VALUES (?, ?, ?);";
     	
         try {
@@ -22,7 +22,7 @@ public class MovimentacaoDAO {
             
             ps.setString(1, movimentacao.getMovimentacao());
             ps.setInt(2, movimentacao.getQuantidade());
-            ps.setInt(3, movimentacao.getProduto().getId());
+            ps.setInt(3, movimentacao.getProdutoId());
             
            int rows = ps.executeUpdate();
             
@@ -47,7 +47,7 @@ public class MovimentacaoDAO {
         }
     }
     
-    public Movimentacao procurarPorId(int movimentacaoId) { 
+    public MovimentacaoDTO procurarPorId(int movimentacaoId) { 
     	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ?;";
     	
         try {
@@ -58,7 +58,7 @@ public class MovimentacaoDAO {
             
             ResultSet rs = ps.executeQuery();
             
-            Movimentacao movimentacao = null;
+            MovimentacaoDTO movimentacao = null;
             if (rs.next()) {
             	movimentacao = montarMovimentacao(rs);
             }
@@ -74,7 +74,7 @@ public class MovimentacaoDAO {
         }
     }
     
-    public boolean existe(Movimentacao movimentacao) { 
+    public boolean existe(MovimentacaoDTO movimentacao) { 
     	String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE id = ?;";
     	
         try {
@@ -101,7 +101,7 @@ public class MovimentacaoDAO {
         }
     }
     
-    public List<Movimentacao> pesquisarTodos() { 
+    public List<MovimentacaoDTO> pesquisarTodos() { 
     	String sql = "SELECT * FROM " + NOMEDATABELA + ";";
     	
         try {
@@ -110,7 +110,7 @@ public class MovimentacaoDAO {
             
             ResultSet rs = ps.executeQuery();
             
-            List<Movimentacao> movimentacoes = montarListaMovimentacao(rs);
+            List<MovimentacaoDTO> movimentacoes = montarListaMovimentacao(rs);
             
             return movimentacoes;
         } catch (Exception e) {
@@ -119,11 +119,11 @@ public class MovimentacaoDAO {
         }
     }
     
-    public List<Movimentacao> montarListaMovimentacao(ResultSet rs) {
-        List<Movimentacao> movimentacoes = new ArrayList<Movimentacao>();
+    public List<MovimentacaoDTO> montarListaMovimentacao(ResultSet rs) {
+        List<MovimentacaoDTO> movimentacoes = new ArrayList<MovimentacaoDTO>();
         
         try {
-        	Movimentacao movimentacao = null;
+        	MovimentacaoDTO movimentacao = null;
         	
             while (rs.next()) {
                  movimentacao = montarMovimentacao(rs);
@@ -137,9 +137,9 @@ public class MovimentacaoDAO {
         }
     }
     
-    private Movimentacao montarMovimentacao(ResultSet rs) {
+    private MovimentacaoDTO montarMovimentacao(ResultSet rs) {
         try {
-            Movimentacao movimentacao = new Movimentacao();
+            MovimentacaoDTO movimentacao = new MovimentacaoDTO();
             
             Timestamp timestamp = rs.getTimestamp("criadoEm");
             

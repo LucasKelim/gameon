@@ -1,7 +1,7 @@
 package gameon.controllers;
 
 import gameon.models.BO.UsuarioBO;
-import gameon.models.DTO.Usuario;
+import gameon.models.DTO.UsuarioDTO;
 import gameon.utils.SessaoUsuario;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -30,7 +30,7 @@ public class LoginController {
         UsuarioBO usuarioBO = new UsuarioBO();
         
         // CORREÇÃO: O método procurarPorEmail recebe String, não objeto
-        Usuario usuarioEncontrado = usuarioBO.procurarPorEmail(email);
+        UsuarioDTO usuarioEncontrado = usuarioBO.procurarPorEmail(email);
 
         // Verifica a senha (usando .getSenha() do ValueObject ou direto da String dependendo da sua impl)
         // Assumindo que usuario.getSenha() retorna a String da senha

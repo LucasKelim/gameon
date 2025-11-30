@@ -2,11 +2,11 @@ package gameon.models.DTO;
 
 import java.time.LocalDateTime;
 
-public class OrdemProduto {
+public class OrdemProdutoDTO {
 	private int id;
 	private int quantidade;
-	private Ordem ordem;
-	private Produto produto;
+	private int ordemId;
+	private int produtoId;
 	private LocalDateTime criadoEm;
 	
 	public int getId() {
@@ -21,17 +21,17 @@ public class OrdemProduto {
 	public void setQuantidade(int quantidade) {
 		this.quantidade = quantidade;
 	}
-	public Ordem getOrdem() {
-		return ordem;
+	public int getOrdem() {
+		return ordemId;
 	}
-	public void setOrdem(Ordem ordem) {
-		this.ordem = ordem;
+	public void setOrdem(int ordemId) {
+		this.ordemId = ordemId;
 	}
-	public Produto getProduto() {
-		return produto;
+	public int getProduto() {
+		return produtoId;
 	}
-	public void setProduto(Produto produto) {
-		this.produto = produto;
+	public void setProduto(int produtoId) {
+		this.produtoId = produtoId;
 	}
 	public LocalDateTime getCriadoEm() {
 		return criadoEm;
@@ -43,14 +43,14 @@ public class OrdemProduto {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("OrdemProdutoDTO [id=");
+		builder.append("OrdemProduto [id=");
 		builder.append(id);
 		builder.append(", quantidade=");
 		builder.append(quantidade);
-		builder.append(", ordem=");
-		builder.append(ordem);
-		builder.append(", produto=");
-		builder.append(produto);
+		builder.append(", ordemId=");
+		builder.append(ordemId);
+		builder.append(", produtoId=");
+		builder.append(produtoId);
 		builder.append(", criadoEm=");
 		builder.append(criadoEm);
 		builder.append("]");

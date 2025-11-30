@@ -3,14 +3,13 @@ package gameon.models.BO;
 import java.util.List;
 
 import gameon.models.DAO.EnderecoDAO;
-import gameon.models.DTO.Endereco;
+import gameon.models.DTO.EnderecoDTO;
 
 public class EnderecoBO {
 
-    public boolean inserir(Endereco endereco) {
-        // Validação simples: endereço precisa de um cliente vinculado
-        if (endereco.getCliente() == null || endereco.getCliente().getId() == 0) {
-            return false;
+    public EnderecoDTO inserir(EnderecoDTO endereco) {
+        if (endereco.getClienteId() == 0) {
+            return null;
         }
 
         if (!existe(endereco)) {
@@ -18,37 +17,35 @@ public class EnderecoBO {
             return enderecoDAO.inserir(endereco);
         }
         
-        return false;
+        return null;
     }
     
-    public boolean alterar(Endereco endereco) {
+    public EnderecoDTO alterar(EnderecoDTO endereco) {
         EnderecoDAO enderecoDAO = new EnderecoDAO();
         return enderecoDAO.alterar(endereco);
     }
     
-    public boolean excluir(Endereco endereco) {
+    public boolean excluir(EnderecoDTO endereco) {
         EnderecoDAO enderecoDAO = new EnderecoDAO();
-        return enderecoDAO.excluir(endereco);
+        return enderecoDAO.excluir(endereco.getId());
     }
     
-    public Endereco procurarPorId(Endereco endereco){
+    public EnderecoDTO procurarPorId(EnderecoDTO endereco){
         EnderecoDAO enderecoDAO = new EnderecoDAO();
-        return enderecoDAO.procurarPorId(endereco);
+        return enderecoDAO.procurarPorId(endereco.getId());
     }
     
-    // Removi o "procurarPorEmail" pois Endereço não costuma ter email,
-    // mas adicionei este que busca todos os endereços de um cliente
-    public List<Endereco> procurarPorClienteId(int clienteId){
+    public List<EnderecoDTO> procurarPorCliente(EnderecoDTO endereco){
         EnderecoDAO enderecoDAO = new EnderecoDAO();
-        return enderecoDAO.procurarPorClienteId(clienteId);
+        return enderecoDAO.procurarPorClienteId(endereco.getClienteId());
     }
     
-    public boolean existe(Endereco endereco) {
+    public boolean existe(EnderecoDTO endereco) {
         EnderecoDAO enderecoDAO = new EnderecoDAO();
         return enderecoDAO.existe(endereco);
     }
     
-    public List<Endereco> pesquisarTodos() {
+    public List<EnderecoDTO> pesquisarTodos() {
         EnderecoDAO enderecoDAO = new EnderecoDAO();
         return enderecoDAO.pesquisarTodos();
     }

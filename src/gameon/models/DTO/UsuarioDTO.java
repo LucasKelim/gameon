@@ -2,7 +2,7 @@ package gameon.models.DTO;
 
 import java.time.LocalDateTime;
 
-abstract public class Usuario {
+public class UsuarioDTO {
 	private int id;
 	private String nome;
 	private String email;
