@@ -7,8 +7,7 @@ import gameon.models.DTO.ProdutoDTO;
 
 public class ProdutoBO {
 	
-
-	public ProdutoDTO inserir(ProdutoDTO produto) {
+	public Produto inserir(Produto produto) {
 		if (!existe(produto)) {
 			ProdutoDAO produtoDAO = new ProdutoDAO();
 			

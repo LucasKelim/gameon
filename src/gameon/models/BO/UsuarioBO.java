@@ -1,81 +1,90 @@
 package gameon.models.BO;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import gameon.models.Usuario;
 import gameon.models.DAO.UsuarioDAO;
 import gameon.models.DTO.UsuarioDTO;
-import gameon.models.valuesobjects.Email;
 
 public class UsuarioBO {
 	
+	private UsuarioDAO usuarioDAO = new UsuarioDAO(); 
+	
 	public Usuario inserir(Usuario usuario) {
-		
-		validar(usuario);
-		
-		usuario.setSenha(hashSenha(usuario.getSenha()));
+		UsuarioDTO usuarioDTO = toDTO(usuario);
 		
 		if (!existe(usuario)) {
-			UsuarioDAO usuarioDAO = new UsuarioDAO();
 			
-			return usuarioDAO.inserir(usuario);
+			usuarioDTO = usuarioDAO.inserir(usuarioDTO);
+			
+			return toModel(usuarioDTO);
 		}
 		
 		return null;
 	}
 	
-	public UsuarioDTO alterar(UsuarioDTO usuario) {
+	public Usuario alterar(Usuario usuario) {
+		UsuarioDTO usuarioDTO = toDTO(usuario);
 		
-		validar(usuario);
+		usuarioDTO = usuarioDAO.alterar(usuarioDTO);
 		
-		UsuarioDAO usuarioDAO = new UsuarioDAO();
-		
-		return usuarioDAO.alterar(usuario);
+		return toModel(usuarioDTO);
 	}
 	
-	public boolean excluir(UsuarioDTO usuario) {
-		UsuarioDAO usuarioDAO = new UsuarioDAO();
+	public boolean excluir(Usuario usuario) {
+		UsuarioDTO usuarioDTO = toDTO(usuario);
 		
-		return usuarioDAO.excluir(usuario.getId());
+		return usuarioDAO.excluir(usuarioDTO.getId());
 	}
 	
-    public UsuarioDTO procurarPorId(int usuarioId){
-    	UsuarioDAO usuarioDAO = new UsuarioDAO();
+    public Usuario procurarPorId(int usuarioId){
+		UsuarioDTO usuarioDTO = usuarioDAO.procurarPorId(usuarioId);
     	
-        return usuarioDAO.procurarPorId(usuarioId);
+        return toModel(usuarioDTO);
     }
     
-    public UsuarioDTO procurarPorEmail(String email){
-    	UsuarioDAO usuarioDAO = new UsuarioDAO();
+    public Usuario procurarPorEmail(String email){
+    	UsuarioDTO usuarioDTO = usuarioDAO.procurarPorEmail(email);
     	
-        return usuarioDAO.procurarPorEmail(email);
+        return toModel(usuarioDTO);
     }
 	
-	public boolean existe(UsuarioDTO usuario) {
-		UsuarioDAO usuarioDAO = new UsuarioDAO();
+	public boolean existe(Usuario usuario) {
+		UsuarioDTO usuarioDTO = toDTO(usuario);
 		
-		return usuarioDAO.existe(usuario);
+		return usuarioDAO.existe(usuarioDTO);
 	}
 	
-	public List<UsuarioDTO> pesquisarTodos() {
-		UsuarioDAO usuarioDAO = new UsuarioDAO();
+	public List<Usuario> pesquisarTodos() {
+		List<UsuarioDTO> usuariosDTO = usuarioDAO.pesquisarTodos();
+		
+		return toModelList(usuariosDTO); 
+	}
+	
+    private Usuario toModel(UsuarioDTO usuarioDTO) {
+        return new Usuario();
+    }
+    
+    private List<Usuario> toModelList(List<UsuarioDTO> usuariosDTO) {
+    	List<Usuario> usuarios = new ArrayList<Usuario>();
+    	
+    	for (UsuarioDTO usuarioDTO : usuariosDTO) {
+    		usuarios.add(toModel(usuarioDTO));
+    	}
+    	
+    	return usuarios;
+    }
 
-		return usuarioDAO.pesquisarTodos();
-	}
-	
-	private void validar(UsuarioDTO usuario) {
-		try {
-	        Email emailVO = new Email(usuario.getEmail());
-	        usuario.setEmail(emailVO.getEmail());
-	        
-	    } catch (IllegalArgumentException e) {
-	        throw new IllegalArgumentException(e.getMessage());
-	    }
-	}
-	
-	private String hashSenha(String senha) {
-		return BCrypt.hashpw(senha, BCrypt.gensalt());
-	}
+    private UsuarioDTO toDTO(Usuario usuario) {
+        UsuarioDTO usuarioDTO = new UsuarioDTO();
+        
+        usuarioDTO.setId(usuario.getId());
+        usuarioDTO.setNome(usuario.getNome());
+        usuarioDTO.setEmail(usuario.getEmail().getEmail());
+        usuarioDTO.setSenha(usuario.getSenha().getSenha());
+        usuarioDTO.setCriadoEm(usuario.getCriadoEm());
+        
+        return usuarioDTO;
+    }
 }
