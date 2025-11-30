@@ -3,18 +3,21 @@ package gameon.models.BO;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.security.crypto.bcrypt.BCrypt;
+
 import gameon.models.Usuario;
 import gameon.models.DAO.UsuarioDAO;
 import gameon.models.DTO.UsuarioDTO;
+import gameon.models.valuesobjects.Email;
+import gameon.models.valuesobjects.Senha;
 
 public class UsuarioBO {
 	
 	private UsuarioDAO usuarioDAO = new UsuarioDAO(); 
 	
 	public Usuario inserir(Usuario usuario) {
-		UsuarioDTO usuarioDTO = toDTO(usuario);
-		
 		if (!existe(usuario)) {
+			UsuarioDTO usuarioDTO = toDTO(usuario);
 			
 			usuarioDTO = usuarioDAO.inserir(usuarioDTO);
 			
@@ -62,8 +65,20 @@ public class UsuarioBO {
 		return toModelList(usuariosDTO); 
 	}
 	
+	public boolean verificarSenha(String senha, String senhaAtual) {
+		return BCrypt.checkpw(senha, senhaAtual);
+	}
+	
     private Usuario toModel(UsuarioDTO usuarioDTO) {
-        return new Usuario();
+    	Usuario usuario = new Usuario(
+    		usuarioDTO.getId(),
+    		usuarioDTO.getNome(),
+    		new Email(usuarioDTO.getEmail()),
+    		new Senha(usuarioDTO.getSenha()),
+    		usuarioDTO.getCriadoEm()
+		);
+    	
+        return usuario;
     }
     
     private List<Usuario> toModelList(List<UsuarioDTO> usuariosDTO) {

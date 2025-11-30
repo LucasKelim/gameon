@@ -8,7 +8,6 @@ public class EnderecoDTO {
 	private int numero;
 	private String bairro;
 	private String codigoPostal;
-	private String pais;
 	private String estado;
 	private String cidade;
 	private int clienteId;
@@ -44,12 +43,6 @@ public class EnderecoDTO {
 	}
 	public void setCodigoPostal(String codigoPostal) {
 		this.codigoPostal = codigoPostal;
-	}
-	public String getPais() {
-		return pais;
-	}
-	public void setPais(String pais) {
-		this.pais = pais;
 	}
 	public String getEstado() {
 		return estado;
@@ -89,8 +82,6 @@ public class EnderecoDTO {
 		builder.append(bairro);
 		builder.append(", codigoPostal=");
 		builder.append(codigoPostal);
-		builder.append(", pais=");
-		builder.append(pais);
 		builder.append(", estado=");
 		builder.append(estado);
 		builder.append(", cidade=");

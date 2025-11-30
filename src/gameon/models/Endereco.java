@@ -1,14 +1,17 @@
 package gameon.models;
 
+import java.time.LocalDateTime;
+
 public class Endereco {
 	private int id;
-	private String longradouro;
+	private String logradouro;
 	private int numero;
 	private String bairro;
 	private String cidade;
 	private String cep;
 	private String estado;
 	private Cliente cliente;
+	private LocalDateTime criadoEm;
 	
 	public int getId() {
 		return id;
@@ -18,12 +21,12 @@ public class Endereco {
 		this.id = id;
 	}
 	
-	public String getLongradouro() {
-		return longradouro;
+	public String getLogradouro() {
+		return logradouro;
 	}
 	
-	public void setLongradouro(String longradouro) {
-		this.longradouro = longradouro;
+	public void setLogradouro(String logradouro) {
+		this.logradouro = logradouro;
 	}
 	
 	public int getNumero() {
@@ -73,6 +76,14 @@ public class Endereco {
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
 	}
+	
+	public LocalDateTime getCriadoEm() {
+		return criadoEm;
+	}
+	
+	public void setCriadoEm(LocalDateTime criadoEm) {
+		this.criadoEm = criadoEm;
+	}
 
 	@Override
 	public String toString() {
@@ -80,7 +91,7 @@ public class Endereco {
 		builder.append("Endereco [id=");
 		builder.append(id);
 		builder.append(", longradouro=");
-		builder.append(longradouro);
+		builder.append(logradouro);
 		builder.append(", numero=");
 		builder.append(numero);
 		builder.append(", bairro=");

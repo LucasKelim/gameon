@@ -230,7 +230,6 @@ public class EnderecoDAO {
             endereco.setCodigoPostal(rs.getString("cep"));
             endereco.setCidade(rs.getString("cidade"));
             endereco.setEstado(rs.getString("estado"));
-            endereco.setPais(rs.getString("pais"));
             endereco.setCriadoEm(timestamp.toLocalDateTime());
             
             return endereco;

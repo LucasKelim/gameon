@@ -59,7 +59,7 @@ create table cliente (
 
 create table endereco (
 	id int unsigned primary key auto_increment,
-    longradouro varchar(255) not null,
+    logradouro varchar(255) not null,
     numero int,
     bairro varchar(255) not null,
     cidade varchar(255) not null,

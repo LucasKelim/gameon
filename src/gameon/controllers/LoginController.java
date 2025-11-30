@@ -1,7 +1,7 @@
 package gameon.controllers;
 
+import gameon.models.Usuario;
 import gameon.models.BO.UsuarioBO;
-import gameon.models.DTO.UsuarioDTO;
 import gameon.utils.SessaoUsuario;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -29,14 +29,16 @@ public class LoginController {
 
         UsuarioBO usuarioBO = new UsuarioBO();
         
-        // CORREÇÃO: O método procurarPorEmail recebe String, não objeto
-        UsuarioDTO usuarioEncontrado = usuarioBO.procurarPorEmail(email);
+        // 1. Busca o Usuário (Model) pelo email
+        // O BO já fez o trabalho de converter DTO -> Model para nós
+        Usuario usuarioEncontrado = usuarioBO.procurarPorEmail(email);
 
-        // Verifica a senha (usando .getSenha() do ValueObject ou direto da String dependendo da sua impl)
-        // Assumindo que usuario.getSenha() retorna a String da senha
-        if (usuarioEncontrado != null && usuarioEncontrado.getSenha().equals(senha)) {
+        // 2. Verifica a senha usando o método seguro do BO
+        // usuarioEncontrado.getSenha().getSenha() retorna o HASH que veio do banco
+        if (usuarioEncontrado != null && 
+            usuarioBO.verificarSenha(senha, usuarioEncontrado.getSenha().getSenha())) {
             
-            // Salva na sessão
+            // 3. Salva a Model na sessão
             SessaoUsuario.getInstancia().setUsuarioLogado(usuarioEncontrado);
             
             lblMensagem.setStyle("-fx-text-fill: green;");
@@ -67,7 +69,6 @@ public class LoginController {
     @FXML
     public void irParaCadastro() {
         try {
-            // Caminho corrigido conforme sua estrutura de pacotes
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/gameon/views/CadastroCliente.fxml"));
             Parent root = loader.load();
             

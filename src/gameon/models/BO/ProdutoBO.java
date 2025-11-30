@@ -1,56 +1,92 @@
 package gameon.models.BO;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import gameon.models.Produto;
 import gameon.models.DAO.ProdutoDAO;
 import gameon.models.DTO.ProdutoDTO;
 
 public class ProdutoBO {
 	
+	private ProdutoDAO produtoDAO = new ProdutoDAO();
+	
 	public Produto inserir(Produto produto) {
 		if (!existe(produto)) {
-			ProdutoDAO produtoDAO = new ProdutoDAO();
+			ProdutoDTO produtoDTO = toDTO(produto);
 			
-			return produtoDAO.inserir(produto);
+			produtoDTO = produtoDAO.inserir(produtoDTO);
+			
+			return toModel(produtoDTO);
 		}
 		
 		return null;
 	}
 	
-	public ProdutoDTO alterar(ProdutoDTO produto) {
-		ProdutoDAO produtoDAO = new ProdutoDAO();
+	public Produto alterar(Produto produto) {
+		ProdutoDTO produtoDTO = toDTO(produto);
 		
-		return produtoDAO.alterar(produto);
+		produtoDTO = produtoDAO.alterar(produtoDTO);
+		
+		return toModel(produtoDTO);
 	}
 	
-	public boolean excluir(ProdutoDTO produto) {
-		ProdutoDAO produtoDAO = new ProdutoDAO();
+	public boolean excluir(Produto produto) {
+		ProdutoDTO produtoDTO = toDTO(produto);
 		
-		return produtoDAO.excluir(produto.getId());
+		return produtoDAO.excluir(produtoDTO.getId());
 	}
 	
-    public ProdutoDTO procurarPorId(ProdutoDTO produto){
-    	ProdutoDAO produtoDAO = new ProdutoDAO();
+    public Produto procurarPorId(int produtoId) {
+    	ProdutoDTO produtoDTO = produtoDAO.procurarPorId(produtoId);
     	
-        return produtoDAO.procurarPorId(produto.getId());
+        return toModel(produtoDTO);
     }
     
-    public ProdutoDTO procurarPorNome(ProdutoDTO produto){
-    	ProdutoDAO produtoDAO = new ProdutoDAO();
+    public Produto procurarPorNome(String produtoNome) {
+    	ProdutoDTO produtoDTO = produtoDAO.procurarPorNome(produtoNome); 
     	
-        return produtoDAO.procurarPorNome(produto.getNome());
+        return toModel(produtoDTO);
     }
 	
-	public boolean existe(ProdutoDTO produto) {
-		ProdutoDAO produtoDAO = new ProdutoDAO();
+	public boolean existe(Produto produto) {
+		ProdutoDTO produtoDTO = toDTO(produto);
 		
-		return produtoDAO.existe(produto);
+		return produtoDAO.existe(produtoDTO);
 	}
 	
-	public List<ProdutoDTO> pesquisarTodos() {
-		ProdutoDAO produtoDAO = new ProdutoDAO();
-
-		return produtoDAO.pesquisarTodos();
+	public List<Produto> pesquisarTodos() {
+		List<ProdutoDTO> produtosDTO = produtoDAO.pesquisarTodos();
+		
+		return toModelList(produtosDTO);
 	}
+	
+	 private Produto toModel(ProdutoDTO produtoDTO) {
+	        return new Produto();
+	    }
+	    
+    private List<Produto> toModelList(List<ProdutoDTO> produtosDTO) {
+    	List<Produto> produtos = new ArrayList<Produto>();
+    	
+    	for (ProdutoDTO produtoDTO : produtosDTO) {
+    		produtos.add(toModel(produtoDTO));
+    	}
+    	
+    	return produtos;
+    }
 
+    private ProdutoDTO toDTO(Produto produto) {
+        ProdutoDTO produtoDTO = new ProdutoDTO();
+        
+        produtoDTO.setId(produto.getId());
+        produtoDTO.setNome(produto.getNome());
+        produtoDTO.setDescricao(produto.getDescricao());
+        produtoDTO.setPreco(produto.getPreco());
+        produtoDTO.setEstoque(produto.getEstoque());
+        produtoDTO.setStatus(produto.isStatus());
+        produtoDTO.setAdminId(produto.getAdmin().getId());
+        produtoDTO.setCriadoEm(produto.getCriadoEm());
+        
+        return produtoDTO;
+    }
 }

@@ -1,14 +1,14 @@
 package gameon;
 
+import gameon.models.Cliente;
 import gameon.models.BO.ClienteBO;
-import gameon.models.DTO.ClienteDTO;
 
 public class MainClienteProcurarPorId {
 
 	public static void main(String[] args) {
 		
 		ClienteBO clienteBO = new ClienteBO();
-		ClienteDTO cliente = new ClienteDTO();
+		Cliente cliente = new Cliente();
 		
 		cliente.setId(1);
 		

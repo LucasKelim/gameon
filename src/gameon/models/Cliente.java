@@ -1,11 +1,24 @@
 package gameon.models;
 
+import java.time.LocalDateTime;
+
 import gameon.models.valuesobjects.Cpf;
+import gameon.models.valuesobjects.Email;
+import gameon.models.valuesobjects.Senha;
 
 public class Cliente extends Usuario {
 	private Cpf cpf;
 	private String telefone;
 	private String asaasCliente;
+	
+	public Cliente() {}
+	
+	public Cliente(int id, String nome, Email email, Senha senha, Cpf cpf, String telefone, String asaasCliente, LocalDateTime criadoEm) {
+		super(id, nome, email, senha, criadoEm);
+		setCpf(cpf);
+		setTelefone(telefone);
+		setAsaasCliente(asaasCliente);
+	}
 	
 	public Cpf getCpf() {
 		return cpf;

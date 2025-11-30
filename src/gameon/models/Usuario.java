@@ -12,6 +12,16 @@ public class Usuario {
 	private Senha senha;
 	private LocalDateTime criadoEm;
 	
+	public Usuario() {}
+	
+	public Usuario(int id, String nome, Email email, Senha senha, LocalDateTime criadoEm) {
+		setId(id);
+		setNome(nome);
+		setEmail(email);
+		setSenha(senha);
+		setCriadoEm(criadoEm);
+	}
+	
 	public int getId() {
 		return id;
 	}

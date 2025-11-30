@@ -1,9 +1,12 @@
 package gameon.controllers;
 
+import gameon.models.Cliente; 
+import gameon.models.Endereco; 
 import gameon.models.BO.ClienteBO;
 import gameon.models.BO.EnderecoBO;
-import gameon.models.DTO.ClienteDTO;
-import gameon.models.DTO.EnderecoDTO;
+import gameon.models.valuesobjects.Email; 
+import gameon.models.valuesobjects.Senha;
+import gameon.models.valuesobjects.Cpf;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -31,53 +34,54 @@ public class CadastroClienteController {
     @FXML
     private void cadastrarCliente() {
         try {
-            // 1. Monta o objeto Cliente
-            ClienteDTO cli = new ClienteDTO();
-            cli.setNome(txtNome.getText());
-            cli.setEmail(txtEmail.getText()); // Usa seu Value Object
-            cli.setSenha(txtSenha.getText()); // Usa seu Value Object
-            cli.setCpf(txtCpf.getText());
-            cli.setTelefone(txtTelefone.getText());
+            Cliente cliente = new Cliente();
+            cliente.setNome(txtNome.getText());
             
-            // 2. Chama o ClienteBO para inserir (Isso salva no Asaas, Usuario e Cliente)
+            cliente.setEmail(new Email(txtEmail.getText())); 
+            cliente.setSenha(new Senha(txtSenha.getText()));
+            
+            cliente.setCpf(new Cpf(txtCpf.getText()));
+            cliente.setTelefone(txtTelefone.getText());
+
             ClienteBO clienteBO = new ClienteBO();
-            ClienteDTO clienteSalvo = clienteBO.inserir(cli);
+            Cliente clienteSalvo = clienteBO.inserir(cliente);
+            
+            System.out.println(clienteSalvo);
 
             if (clienteSalvo != null) {
-                // 3. Se salvou o cliente, agora salva o endereço
                 salvarEndereco(clienteSalvo);
                 
                 exibirAlerta("Sucesso", "Cadastro realizado com sucesso!");
                 voltarLogin();
             } else {
-                exibirAlerta("Erro", "Não foi possível realizar o cadastro. Verifique os dados.");
+                exibirAlerta("Erro", "Não foi possível realizar o cadastro. Verifique se o email ou CPF já existem.");
             }
 
+        } catch (IllegalArgumentException e) {
+            exibirAlerta("Dados Inválidos", e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            exibirAlerta("Erro", "Falha no sistema: " + e.getMessage());
+            exibirAlerta("Erro Crítico", "Falha no sistema: " + e.getMessage());
         }
     }
 
-    private void salvarEndereco(ClienteDTO cliente) {
-        // Se você tiver EnderecoBO e EnderecoDTO implementados:
+    private void salvarEndereco(Cliente cliente) {
         try {
-            EnderecoDTO end = new EnderecoDTO();
-            end.setCodigoPostal(txtCep.getText());
-            end.setEstado(txtEstado.getText());
-            end.setCidade(txtCidade.getText());
-            end.setBairro(txtBairro.getText()); // Se tiver esse campo no DTO
-            end.setLogradouro(txtLogradouro.getText());
+            Endereco endereco = new Endereco();
+            endereco.setCep(txtCep.getText());
+            endereco.setEstado(txtEstado.getText());
+            endereco.setCidade(txtCidade.getText());
+            endereco.setBairro(txtBairro.getText());
+            endereco.setLogradouro(txtLogradouro.getText());
             
             if (!txtNumero.getText().isEmpty()) {
-                end.setNumero(Integer.parseInt(txtNumero.getText()));
+            	endereco.setNumero(Integer.parseInt(txtNumero.getText()));
             }
             
-            // Vincula o endereço ao cliente recém-criado
-            end.setCliente(cliente);
+            endereco.setCliente(cliente);
 
             EnderecoBO enderecoBO = new EnderecoBO();
-            enderecoBO.inserir(end);
+            enderecoBO.inserir(endereco);
             
         } catch (Exception e) {
             System.out.println("Erro ao salvar endereço (o cliente foi salvo): " + e.getMessage());

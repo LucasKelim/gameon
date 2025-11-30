@@ -12,6 +12,8 @@ import gameon.models.DAO.UsuarioDAO;
 import gameon.models.DTO.ClienteDTO;
 import gameon.models.DTO.UsuarioDTO;
 import gameon.models.valuesobjects.Cpf;
+import gameon.models.valuesobjects.Email;
+import gameon.models.valuesobjects.Senha;
 import gameon.services.asaas.Asaas;
 
 public class ClienteBO {
@@ -26,16 +28,19 @@ public class ClienteBO {
 	        UsuarioBO usuarioBO = new UsuarioBO();
 			Usuario usuario = usuarioBO.inserir(cliente);
 			
-			cliente.setId(usuario.getId());
+			clienteDTO.setId(usuario.getId());
 			
-			Map<String, Object> res = Asaas.inserir("customers", buildAsaasPayload(cliente));
+			Map<String, Object> res = Asaas.inserir(
+				"customers", 
+				buildAsaasPayload(cliente)
+			);
 			
 	        if (res == null || !res.containsKey("id")) {
 	            return null;
 	        }
 	        
 	        String asaasCliente = res.get("id").toString();
-	        cliente.setAsaasCliente(asaasCliente);
+	        clienteDTO.setAsaasCliente(asaasCliente);
 	        
 			clienteDTO = clienteDAO.inserir(clienteDTO);
 			
@@ -107,10 +112,10 @@ public class ClienteBO {
 		return clienteDAO.existe(clienteDTO);
 	}
 	
-	public List<ClienteDTO> pesquisarTodos() {
-		ClienteDAO clienteDAO = new ClienteDAO();
-
-		return clienteDAO.pesquisarTodos();
+	public List<Cliente> pesquisarTodos() {
+		List<ClienteDTO> clientesDTO = clienteDAO.pesquisarTodos();
+		
+		return toModelList(clientesDTO);
 	}
 	
 	private String buildAsaasUrl(Cliente cliente) {
@@ -121,7 +126,7 @@ public class ClienteBO {
         Map<String, Object> dadosAsaas = new HashMap<>();
         
         dadosAsaas.put("name", cliente.getNome());
-        dadosAsaas.put("cpfCnpj", cliente.getCpf());
+        dadosAsaas.put("cpfCnpj", cliente.getCpf().getCpf());
         
         return dadosAsaas;
     }
@@ -132,7 +137,16 @@ public class ClienteBO {
     	
     	if (usuarioDTO == null) return null;
     	
-    	Cliente cliente = new Cliente();
+    	Cliente cliente = new Cliente(
+    		usuarioDTO.getId(),
+    		usuarioDTO.getNome(),
+    		new Email(usuarioDTO.getEmail()),
+    		new Senha(usuarioDTO.getSenha()),
+    		new Cpf(clienteDTO.getCpf()),
+    		clienteDTO.getTelefone(),
+    		clienteDTO.getAsaasCliente(),
+    		usuarioDTO.getCriadoEm()
+		);
     	
         return cliente;
     }
