@@ -16,15 +16,17 @@ public class CarrinhoProdutoBO {
 	private ProdutoBO produtoBO = new ProdutoBO();
 
 	public CarrinhoProduto inserir(CarrinhoProduto carrinhoProduto) {
-		if (!existe(carrinhoProduto)) {
-			CarrinhoProdutoDTO carrinhoProdutoDTO = toDTO(carrinhoProduto);
-			
+		CarrinhoProdutoDTO carrinhoProdutoDTO = toDTO(carrinhoProduto);
+		
+		if (!existe(carrinhoProduto)) {	
 			carrinhoProdutoDTO = carrinhoProdutoDAO.inserir(carrinhoProdutoDTO);
 			
 			return toModel(carrinhoProdutoDTO);
+		} else {
+			carrinhoProdutoDTO = carrinhoProdutoDAO.aumentarQuantidade(carrinhoProdutoDTO);
+			
+			return toModel(carrinhoProdutoDTO);			
 		}
-		
-		return null;
 	}
 	
 	public CarrinhoProduto alterar(CarrinhoProduto carrinhoProduto) {
@@ -62,10 +64,14 @@ public class CarrinhoProdutoBO {
     private CarrinhoProduto toModel(CarrinhoProdutoDTO carrinhoProdutoDTO) {
     	Produto produto = produtoBO.procurarPorId(carrinhoProdutoDTO.getProdutoId());
     	
+    	System.out.println("4: " + produto);
+    	
     	CarrinhoProduto carrinhoProduto = new CarrinhoProduto(
     			produto,
     			carrinhoProdutoDTO.getQuantidade()
 		);
+    	
+    	System.out.println("5: " + carrinhoProduto);
     	
         return carrinhoProduto;
     }

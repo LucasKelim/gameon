@@ -7,7 +7,6 @@ public class OrdemDTO {
 	private String status;
 	private String metodoPagamento;
 	private double valorTotal;
-	private int clienteId;
 	private int enderecoId;
 	private String asaasOrdem;
 	private LocalDateTime criadoEm;
@@ -35,12 +34,6 @@ public class OrdemDTO {
 	}
 	public void setValorTotal(double valorTotal) {
 		this.valorTotal = valorTotal;
-	}
-	public int getClienteId() {
-		return clienteId;
-	}
-	public void setClienteId(int clienteId) {
-		this.clienteId = clienteId;
 	}
 	public int getEnderecoId() {
 		return enderecoId;
@@ -72,8 +65,6 @@ public class OrdemDTO {
 		builder.append(metodoPagamento);
 		builder.append(", valorTotal=");
 		builder.append(valorTotal);
-		builder.append(", clienteId=");
-		builder.append(clienteId);
 		builder.append(", enderecoId=");
 		builder.append(enderecoId);
 		builder.append(", assasOrdem=");

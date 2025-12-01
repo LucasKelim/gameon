@@ -14,39 +14,58 @@ public class CarrinhoProdutoDAO {
 	
 	final String NOMEDATABELA = "carrinho_produto";
     
-    public CarrinhoProdutoDTO inserir(CarrinhoProdutoDTO carrinhoProdutoDTO) {
-    	String sql = "INSERT INTO " + NOMEDATABELA + " (produtoId, clienteId, quantidade) VALUES (?, ?, ?);";
-    	
-        try {
-            Connection conn = Conexao.conectar();
-            PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-            
-            ps.setInt(1, carrinhoProdutoDTO.getProdutoId());
-            ps.setInt(2, carrinhoProdutoDTO.getClienteId());
-            ps.setInt(3, carrinhoProdutoDTO.getQuantidade());
-            
-            int rows = ps.executeUpdate();
-            
-            if (rows == 0) {
-            	return null;
-            }
-            
-        	ResultSet rs = ps.getGeneratedKeys();
-            
-            if (!rs.next()) {
-            	return null;
-            }
+	public CarrinhoProdutoDTO inserir(CarrinhoProdutoDTO carrinhoProdutoDTO) {
+	    String sql = "INSERT INTO " + NOMEDATABELA + " (produtoId, clienteId, quantidade) VALUES (?, ?, ?);";
+	    
+	    try {
+	        Connection conn = Conexao.conectar();
+	        PreparedStatement ps = conn.prepareStatement(sql);
+	        
+	        ps.setInt(1, carrinhoProdutoDTO.getProdutoId());
+	        ps.setInt(2, carrinhoProdutoDTO.getClienteId());
+	        ps.setInt(3, carrinhoProdutoDTO.getQuantidade());
+	        
+	        int rows = ps.executeUpdate();
+	        
+	        ps.close();
+	        conn.close();
+	        
+	        if (rows == 0) {
+	            return null;
+	        }
 
-            ps.close();
-            rs.close();
-            conn.close();
-            
-            return procurarPorId(carrinhoProdutoDTO.getProdutoId(), carrinhoProdutoDTO.getClienteId());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+	        return procurarPorId(carrinhoProdutoDTO.getProdutoId(), carrinhoProdutoDTO.getClienteId());	        
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
+	
+	public CarrinhoProdutoDTO aumentarQuantidade(CarrinhoProdutoDTO carrinhoProdutoDTO) {
+	    String sql = "UPDATE " + NOMEDATABELA + " SET quantidade = quantidade + 1 WHERE produtoId = ? AND clienteId = ?;";
+	    
+	    try {
+	        Connection conn = Conexao.conectar();
+	        PreparedStatement ps = conn.prepareStatement(sql);
+	        
+	        ps.setInt(1, carrinhoProdutoDTO.getProdutoId());
+	        ps.setInt(2, carrinhoProdutoDTO.getClienteId());
+	        
+	        int rows = ps.executeUpdate();
+	        
+	        ps.close();
+	        conn.close();
+	        
+	        if (rows == 0) {
+	            return null;
+	        }
+
+	        return procurarPorId(carrinhoProdutoDTO.getProdutoId(), carrinhoProdutoDTO.getClienteId());	        
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
     
     public CarrinhoProdutoDTO alterar(CarrinhoProdutoDTO carrinhoProdutoDTO) {
     	String sql = "UPDATE " + NOMEDATABELA + " SET quantidade = ? WHERE produtoId = ? AND clienteId = ?;";
@@ -129,7 +148,7 @@ public class CarrinhoProdutoDAO {
             PreparedStatement ps = conn.prepareStatement(sql);
             
             ps.setInt(1, carrinhoProdutoDTO.getProdutoId());
-            ps.setInt(1, carrinhoProdutoDTO.getClienteId());
+            ps.setInt(2, carrinhoProdutoDTO.getClienteId());
             
             ResultSet rs = ps.executeQuery();
             

@@ -22,6 +22,14 @@ public class Carrinho {
 	public void setProdutos(List<CarrinhoProduto> produtos) {
 		this.produtos = produtos;
 	}
+	
+	public void addProduto(CarrinhoProduto carrinhoProduto) {
+		this.produtos.add(carrinhoProduto);
+	}
+	
+	public void removePrduto(CarrinhoProduto carrinhoProduto) {
+		this.produtos.remove(carrinhoProduto);
+	}
 
 	@Override
 	public String toString() {

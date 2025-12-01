@@ -1,7 +1,9 @@
 package gameon.controllers;
 
+import gameon.models.Carrinho;
 import gameon.models.CarrinhoProduto;
 import gameon.models.Produto;
+import gameon.models.BO.CarrinhoProdutoBO;
 import gameon.models.BO.ProdutoBO;
 import gameon.utils.SessaoUsuario;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -75,9 +77,14 @@ public class CatalogoController {
             return;
         }
         
+        Carrinho carrinho = new Carrinho();
         
-
-        adicionarNaSessao(produtoSelecionado);
+        CarrinhoProdutoBO carrinhoProdutoBO = new CarrinhoProdutoBO();
+        CarrinhoProduto carrinhoProduto = new CarrinhoProduto(produtoSelecionado, 1);
+        
+        carrinhoProduto = carrinhoProdutoBO.inserir(carrinhoProduto);
+        
+        carrinho.addProduto(carrinhoProduto);
         
         lblMensagem.setText("Produto '" + produtoSelecionado.getNome() + "' adicionado ao carrinho!");
         lblMensagem.setStyle("-fx-text-fill: green;");

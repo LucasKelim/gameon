@@ -9,6 +9,8 @@ import gameon.models.DAO.AdminDAO;
 import gameon.models.DAO.UsuarioDAO;
 import gameon.models.DTO.AdminDTO;
 import gameon.models.DTO.UsuarioDTO;
+import gameon.models.valuesobjects.Email;
+import gameon.models.valuesobjects.Senha;
 
 public class AdminBO {
 	
@@ -87,7 +89,13 @@ public class AdminBO {
     	
     	if (usuarioDTO == null) return null;
     	
-    	Admin admin = new Admin();
+    	Admin admin = new Admin(
+			usuarioDTO.getId(),
+			usuarioDTO.getNome(),
+			new Email(usuarioDTO.getEmail()),
+			new Senha(usuarioDTO.getEmail()),
+			usuarioDTO.getCriadoEm()
+		);
     	
     	return admin;
     }

@@ -13,6 +13,20 @@ public class Endereco {
 	private Cliente cliente;
 	private LocalDateTime criadoEm;
 	
+	public Endereco() {}
+	
+	public Endereco(int id, String logradouro, int numero, String bairro, String cidade, String cep, String estado, Cliente cliente, LocalDateTime criadoEm) {
+		setId(id);
+		setLogradouro(logradouro);
+		setNumero(numero);
+		setBairro(bairro);
+		setCidade(cidade);
+		setCep(cep);
+		setEstado(estado);
+		setCliente(cliente);
+		setCriadoEm(criadoEm);
+	}
+	
 	public int getId() {
 		return id;
 	}
