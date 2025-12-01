@@ -74,6 +74,8 @@ public class CatalogoController {
             mostrarAlerta("Estoque Indisponível", "Este produto está fora de estoque.");
             return;
         }
+        
+        
 
         adicionarNaSessao(produtoSelecionado);
         
