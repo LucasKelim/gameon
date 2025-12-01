@@ -16,6 +16,10 @@ public class UsuarioBO {
 	private UsuarioDAO usuarioDAO = new UsuarioDAO(); 
 	
 	public Usuario inserir(Usuario usuario) {
+		String hash = BCrypt.hashpw(usuario.getSenha().getValor(), BCrypt.gensalt());
+		
+		usuario.setSenha(new Senha(hash));
+		
 		if (!existe(usuario)) {
 			UsuarioDTO usuarioDTO = toDTO(usuario);
 			
@@ -97,7 +101,7 @@ public class UsuarioBO {
         usuarioDTO.setId(usuario.getId());
         usuarioDTO.setNome(usuario.getNome());
         usuarioDTO.setEmail(usuario.getEmail().getEmail());
-        usuarioDTO.setSenha(usuario.getSenha().getSenha());
+        usuarioDTO.setSenha(usuario.getSenha().getValor());
         usuarioDTO.setCriadoEm(usuario.getCriadoEm());
         
         return usuarioDTO;

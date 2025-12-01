@@ -3,7 +3,6 @@ package gameon.controllers;
 import gameon.models.CarrinhoProduto;
 import gameon.models.Produto;
 import gameon.models.BO.ProdutoBO;
-import gameon.models.DTO.ProdutoDTO;
 import gameon.utils.SessaoUsuario;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -25,10 +24,10 @@ import java.util.List;
 public class CatalogoController {
 
     @FXML private TableView<Produto> tabelaProdutos;
-    @FXML private TableColumn<ProdutoDTO, String> colNome;
-    @FXML private TableColumn<ProdutoDTO, String> colDescricao;
-    @FXML private TableColumn<ProdutoDTO, Number> colPreco;
-    @FXML private TableColumn<ProdutoDTO, Number> colEstoque;
+    @FXML private TableColumn<Produto, String> colNome;
+    @FXML private TableColumn<Produto, String> colDescricao;
+    @FXML private TableColumn<Produto, Number> colPreco;
+    @FXML private TableColumn<Produto, Number> colEstoque;
     @FXML private Label lblMensagem;
 
     @FXML
@@ -48,10 +47,10 @@ public class CatalogoController {
     private void carregarDados() {
         try {
             ProdutoBO produtoBO = new ProdutoBO();
-            List<Produto> listaProdutos = produtoBO.pesquisarTodos(); // Chama o seu DAO via BO
+            List<Produto> produtos = produtoBO.pesquisarTodos();
             
-            if (listaProdutos != null) {
-                ObservableList<Produto> observableList = FXCollections.observableArrayList(listaProdutos);
+            if (produtos != null) {
+                ObservableList<Produto> observableList = FXCollections.observableArrayList(produtos);
                 tabelaProdutos.setItems(observableList);
             }
         } catch (Exception e) {
@@ -108,7 +107,6 @@ public class CatalogoController {
     @FXML
     public void irParaCarrinho() {
         try {
-            // Navega para a tela de Carrinho (que vamos criar a seguir ou você já tem)
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/gameon/views/Carrinho.fxml"));
             Parent root = loader.load();
             
@@ -118,7 +116,6 @@ public class CatalogoController {
             stage.centerOnScreen();
             
         } catch (Exception e) {
-            // Se der erro (provavelmente pq o arquivo Carrinho.fxml não existe ainda), avisa
             e.printStackTrace();
             mostrarAlerta("Erro", "Não foi possível abrir o carrinho: " + e.getMessage());
         }

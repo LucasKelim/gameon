@@ -36,7 +36,7 @@ public class ProdutoDAO {
         	ResultSet rs = ps.getGeneratedKeys();
             
             if (rs.next()) {
-                produto.setId(rs.getInt("id"));
+                produto.setId(rs.getInt(1));
             }
 
             ps.close();
@@ -165,7 +165,7 @@ public class ProdutoDAO {
             
             boolean res = false;
             if (rs.next()) {
-            	return true;                
+            	res = true;                
             }
             
             ps.close();

@@ -1,8 +1,8 @@
 package gameon.utils;
 
 import java.util.ArrayList;
-import gameon.models.Carrinho; // Usa o Model
-import gameon.models.Usuario;  // Usa o Model
+import gameon.models.Carrinho;
+import gameon.models.Usuario;
 
 public class SessaoUsuario {
     
@@ -13,7 +13,7 @@ public class SessaoUsuario {
 
     private SessaoUsuario() {
         carrinhoAtual = new Carrinho();
-        // Garante que a lista comece vazia para evitar erros
+        
         if (carrinhoAtual.getProdutos() == null) {
             carrinhoAtual.setProdutos(new ArrayList<>());
         }

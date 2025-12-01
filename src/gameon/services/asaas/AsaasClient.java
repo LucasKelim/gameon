@@ -41,7 +41,6 @@ public class AsaasClient {
     public Map<String, Object> request(String method, String endpoint, Map<String, Object> data) {
         try {
             URI uri = URI.create(baseUrl + "/" + version + "/" + endpoint);
-            System.out.println("Url: " + uri.toURL());
             HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
 
             conn.setRequestMethod(method);

@@ -79,7 +79,7 @@ public class EnderecoBO {
         enderecoDTO.setCidade(endereco.getCidade());
         enderecoDTO.setCodigoPostal(endereco.getCep());
         enderecoDTO.setEstado(endereco.getEstado());
-        enderecoDTO.setClienteId(endereco.getId());
+        enderecoDTO.setClienteId(endereco.getCliente().getId());
         enderecoDTO.setCriadoEm(endereco.getCriadoEm());
         
         return enderecoDTO;

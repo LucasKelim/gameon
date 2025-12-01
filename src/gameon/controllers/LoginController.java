@@ -29,16 +29,11 @@ public class LoginController {
 
         UsuarioBO usuarioBO = new UsuarioBO();
         
-        // 1. Busca o Usuário (Model) pelo email
-        // O BO já fez o trabalho de converter DTO -> Model para nós
         Usuario usuarioEncontrado = usuarioBO.procurarPorEmail(email);
 
-        // 2. Verifica a senha usando o método seguro do BO
-        // usuarioEncontrado.getSenha().getSenha() retorna o HASH que veio do banco
         if (usuarioEncontrado != null && 
-            usuarioBO.verificarSenha(senha, usuarioEncontrado.getSenha().getSenha())) {
+            usuarioBO.verificarSenha(senha, usuarioEncontrado.getSenha().getValor())) {
             
-            // 3. Salva a Model na sessão
             SessaoUsuario.getInstancia().setUsuarioLogado(usuarioEncontrado);
             
             lblMensagem.setStyle("-fx-text-fill: green;");

@@ -224,12 +224,13 @@ public class EnderecoDAO {
             Timestamp timestamp = rs.getTimestamp("criadoEm");
             
             endereco.setId(rs.getInt("id"));
-            endereco.setLogradouro(rs.getString("longradouro"));
+            endereco.setLogradouro(rs.getString("logradouro"));
             endereco.setNumero(rs.getInt("numero"));
             endereco.setBairro(rs.getString("bairro"));
             endereco.setCodigoPostal(rs.getString("cep"));
             endereco.setCidade(rs.getString("cidade"));
             endereco.setEstado(rs.getString("estado"));
+            endereco.setClienteId(rs.getInt("clienteId"));
             endereco.setCriadoEm(timestamp.toLocalDateTime());
             
             return endereco;

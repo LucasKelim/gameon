@@ -12,6 +12,16 @@ public class Produto {
 	private Admin admin;
 	private LocalDateTime criadoEm;
 	
+	public Produto() {}
+	
+	public Produto(String nome, String descricao, double preco, int estoque, boolean status) {
+		setNome(nome);
+		setDescricao(descricao);
+		setPreco(preco);
+		setEstoque(estoque);
+		setStatus(status);
+	}
+	
 	public int getId() {
 		return id;
 	}

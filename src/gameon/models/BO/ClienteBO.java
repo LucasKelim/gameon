@@ -98,10 +98,10 @@ public class ClienteBO {
     }
     
     public Cliente procurarPorEmail(String email) {
-        UsuarioDTO usuario = usuarioDAO.procurarPorEmail(email);
-        if (usuario == null) return null;
+        UsuarioDTO usuarioDTO = usuarioDAO.procurarPorEmail(email);
+        if (usuarioDTO == null) return null;
         
-        Cliente cliente = procurarPorId(usuario.getId());
+        Cliente cliente = procurarPorId(usuarioDTO.getId());
         
         return cliente;
     }
@@ -167,7 +167,7 @@ public class ClienteBO {
         usuarioDTO.setId(cliente.getId());
         usuarioDTO.setNome(cliente.getNome());
         usuarioDTO.setEmail(cliente.getEmail().getEmail());
-        usuarioDTO.setSenha(cliente.getSenha().getSenha());
+        usuarioDTO.setSenha(cliente.getSenha().getValor());
         usuarioDTO.setCriadoEm(cliente.getCriadoEm());
         
         return usuarioDTO;

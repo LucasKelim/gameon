@@ -23,7 +23,6 @@ public class CadastroClienteController {
     @FXML private TextField txtCpf;
     @FXML private TextField txtTelefone;
 
-    // Campos de Endereço
     @FXML private TextField txtCep;
     @FXML private TextField txtEstado;
     @FXML private TextField txtCidade;
@@ -45,8 +44,6 @@ public class CadastroClienteController {
 
             ClienteBO clienteBO = new ClienteBO();
             Cliente clienteSalvo = clienteBO.inserir(cliente);
-            
-            System.out.println(clienteSalvo);
 
             if (clienteSalvo != null) {
                 salvarEndereco(clienteSalvo);
