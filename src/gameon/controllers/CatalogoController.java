@@ -64,7 +64,7 @@ public class CatalogoController {
     public void adicionarAoCarrinho() {
         // Pega o item selecionado na tabela
         Produto produtoSelecionado = tabelaProdutos.getSelectionModel().getSelectedItem();
-
+        
         if (produtoSelecionado == null) {
             mostrarAlerta("Atenção", "Selecione um produto na tabela para adicionar.");
             return;
@@ -75,7 +75,6 @@ public class CatalogoController {
             return;
         }
 
-        // Lógica para adicionar ou atualizar no carrinho da sessão
         adicionarNaSessao(produtoSelecionado);
         
         lblMensagem.setText("Produto '" + produtoSelecionado.getNome() + "' adicionado ao carrinho!");
@@ -85,7 +84,6 @@ public class CatalogoController {
     private void adicionarNaSessao(Produto produto) {
         List<CarrinhoProduto> carrinho = SessaoUsuario.getInstancia().getCarrinhoAtual().getProdutos();
         
-        // Verifica se o produto já está no carrinho para apenas aumentar a quantidade
         boolean jaExiste = false;
         for (CarrinhoProduto item : carrinho) {
             if (item.getProduto().getId() == produto.getId()) {
@@ -95,7 +93,6 @@ public class CatalogoController {
             }
         }
 
-        // Se não existe, cria um novo item
         if (!jaExiste) {
             CarrinhoProduto novoItem = new CarrinhoProduto();
             novoItem.setProduto(produto);
