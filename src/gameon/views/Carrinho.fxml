@@ -21,6 +21,7 @@
          </padding>
       </HBox>
 
+	<Label fx:id="lblMensagem" style="-fx-font-size: 14; -fx-padding: 0 20;" />
       <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
          <content>
             <VBox fx:id="vboxItens" spacing="10.0">

@@ -3,6 +3,7 @@ package gameon.controllers;
 import gameon.models.Carrinho;
 import gameon.models.CarrinhoProduto;
 import gameon.models.Produto;
+import gameon.models.Usuario;
 import gameon.models.BO.CarrinhoProdutoBO;
 import gameon.models.BO.ProdutoBO;
 import gameon.utils.SessaoUsuario;
@@ -20,6 +21,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
+import gameon.models.Cliente;
+import gameon.models.BO.CarrinhoProdutoBO;
 
 import java.util.List;
 
@@ -64,49 +67,55 @@ public class CatalogoController {
 
     @FXML
     public void adicionarAoCarrinho() {
-        // Pega o item selecionado na tabela
         Produto produtoSelecionado = tabelaProdutos.getSelectionModel().getSelectedItem();
         
         if (produtoSelecionado == null) {
             mostrarAlerta("Atenção", "Selecione um produto na tabela para adicionar.");
             return;
         }
-
+        
         if (produtoSelecionado.getEstoque() <= 0) {
             mostrarAlerta("Estoque Indisponível", "Este produto está fora de estoque.");
             return;
         }
         
-        Carrinho carrinho = new Carrinho();
-        
-        CarrinhoProdutoBO carrinhoProdutoBO = new CarrinhoProdutoBO();
-        CarrinhoProduto carrinhoProduto = new CarrinhoProduto(produtoSelecionado, 1);
-        
-        carrinhoProduto = carrinhoProdutoBO.inserir(carrinhoProduto);
-        
-        carrinho.addProduto(carrinhoProduto);
-        
-        lblMensagem.setText("Produto '" + produtoSelecionado.getNome() + "' adicionado ao carrinho!");
-        lblMensagem.setStyle("-fx-text-fill: green;");
-    }
-
-    private void adicionarNaSessao(Produto produto) {
-        List<CarrinhoProduto> carrinho = SessaoUsuario.getInstancia().getCarrinhoAtual().getProdutos();
-        
-        boolean jaExiste = false;
-        for (CarrinhoProduto item : carrinho) {
-            if (item.getProduto().getId() == produto.getId()) {
-                item.setQuantidade(item.getQuantidade() + 1);
-                jaExiste = true;
-                break;
-            }
+        // VERIFICA SE TEM CLIENTE LOGADO
+        Usuario usuario = SessaoUsuario.getInstancia().getUsuarioLogado();
+        if (usuario == null || !(usuario instanceof Cliente)) {
+            mostrarAlerta("Login Necessário", "Faça login como cliente para adicionar ao carrinho.");
+            return;
         }
-
-        if (!jaExiste) {
-            CarrinhoProduto novoItem = new CarrinhoProduto();
-            novoItem.setProduto(produto);
-            novoItem.setQuantidade(1);
-            carrinho.add(novoItem);
+        
+        Cliente cliente = (Cliente) usuario;
+        
+        try {
+            CarrinhoProdutoBO carrinhoProdutoBO = new CarrinhoProdutoBO();
+            
+            // Cria o item do carrinho COM CLIENTE
+            CarrinhoProduto item = new CarrinhoProduto(produtoSelecionado, 1, cliente);
+            
+            System.out.println("Adicionando ao carrinho: " + produtoSelecionado.getNome() + 
+                              " para cliente: " + cliente.getNome());
+            
+            // Insere no banco
+            CarrinhoProduto resultado = carrinhoProdutoBO.inserir(item);
+            
+            if (resultado != null) {
+                lblMensagem.setText("Produto '" + produtoSelecionado.getNome() + "' adicionado ao carrinho!");
+                lblMensagem.setStyle("-fx-text-fill: green;");
+                
+                // Atualiza também na sessão
+                List<CarrinhoProduto> carrinhoSessao = SessaoUsuario.getInstancia()
+                    .getCarrinhoAtual().getProdutos();
+                carrinhoSessao.add(resultado);
+                
+            } else {
+                mostrarAlerta("Erro", "Não foi possível adicionar ao carrinho.");
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarAlerta("Erro", "Falha ao adicionar ao carrinho: " + e.getMessage());
         }
     }
 

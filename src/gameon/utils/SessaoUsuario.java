@@ -1,7 +1,8 @@
 package gameon.utils;
 
-import java.util.ArrayList;
 import gameon.models.Carrinho;
+import gameon.models.Endereco;
+import gameon.models.Ordem;
 import gameon.models.Usuario;
 
 public class SessaoUsuario {
@@ -10,13 +11,12 @@ public class SessaoUsuario {
     
     private Usuario usuarioLogado;
     private Carrinho carrinhoAtual;
+    private double totalCarrinho;  // ← ADICIONE
+    private Endereco enderecoSelecionado;  // ← ADICIONE
+    private Ordem ordemAtual;  // ← ADICIONE
 
     private SessaoUsuario() {
         carrinhoAtual = new Carrinho();
-        
-        if (carrinhoAtual.getProdutos() == null) {
-            carrinhoAtual.setProdutos(new ArrayList<>());
-        }
     }
 
     public static SessaoUsuario getInstancia() {
@@ -45,6 +45,34 @@ public class SessaoUsuario {
     public void limparSessao() {
         usuarioLogado = null;
         carrinhoAtual = new Carrinho();
-        carrinhoAtual.setProdutos(new ArrayList<>());
+        totalCarrinho = 0;
+        enderecoSelecionado = null;
+        ordemAtual = null;
+    }
+    
+    // ===== NOVOS MÉTODOS =====
+    
+    public double getTotalCarrinho() {
+        return totalCarrinho;
+    }
+    
+    public void setTotalCarrinho(double totalCarrinho) {
+        this.totalCarrinho = totalCarrinho;
+    }
+    
+    public Endereco getEnderecoSelecionado() {
+        return enderecoSelecionado;
+    }
+    
+    public void setEnderecoSelecionado(Endereco enderecoSelecionado) {
+        this.enderecoSelecionado = enderecoSelecionado;
+    }
+    
+    public Ordem getOrdemAtual() {
+        return ordemAtual;
+    }
+    
+    public void setOrdemAtual(Ordem ordemAtual) {
+        this.ordemAtual = ordemAtual;
     }
 }
