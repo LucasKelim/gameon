@@ -222,6 +222,29 @@ public class CarrinhoProdutoDAO {
         }
     }
     
+    public List<CarrinhoProdutoDTO> procurarPorCliente(int clienteId) {
+        String sql = "SELECT * FROM " + NOMEDATABELA + " WHERE clienteId = ?;";
+        
+        try {
+            Connection conn = Conexao.conectar();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            
+            ps.setInt(1, clienteId);
+            
+            ResultSet rs = ps.executeQuery();
+            
+            List<CarrinhoProdutoDTO> carrinhoProdutosDTO = montarLista(rs);
+            
+            ps.close();
+            conn.close();
+            
+            return carrinhoProdutosDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
  // No CarrinhoProdutoDAO.java
     public boolean excluirPorCliente(int clienteId) {
         String sql = "DELETE FROM " + NOMEDATABELA + " WHERE clienteId = ?;";

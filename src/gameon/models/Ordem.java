@@ -14,6 +14,18 @@ public class Ordem {
 	private String asaasOrdem;
 	private LocalDateTime criadoEm;
 	
+	public Ordem() {}
+	
+	public Ordem(int id, OrdemStatus status, MetodoPagamento metodoPagamento, double valorTotal, Endereco endereco, String asaasOrdem, LocalDateTime criadoEm) {
+		setId(id);
+		setStatus(status);
+		setMetodoPagamento(metodoPagamento);
+		setValorTotal(valorTotal);
+		setEndereco(endereco);
+		setAsaasOrdem(asaasOrdem);
+		setCriadoEm(criadoEm);
+	}
+	
 	public int getId() {
 		return id;
 	}

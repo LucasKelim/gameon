@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import gameon.models.Carrinho;
 import gameon.models.CarrinhoProduto;
 import gameon.models.Cliente;
 import gameon.models.Produto;
@@ -50,6 +51,23 @@ public class CarrinhoProdutoBO {
             carrinhoProdutoDTO.getProdutoId(), 
             carrinhoProdutoDTO.getClienteId()
         );
+    }
+    
+    public Carrinho procurarPorCliente(int clienteId) {
+    	Cliente cliente = clienteBO.procurarPorId(clienteId);
+    	
+    	List<CarrinhoProdutoDTO> carrinhoProdutosDTO = carrinhoProdutoDAO.procurarPorCliente(clienteId);
+    	
+    	List<CarrinhoProduto> carrinhoProdutos = toModelList(carrinhoProdutosDTO);
+    	
+    	Carrinho carrinho = new Carrinho(
+    		cliente,
+    		carrinhoProdutos
+		);
+    	
+    	System.out.println("Carrinho ta top: " + carrinho);
+    	
+    	return carrinho;
     }
     
     // Novo método para excluir todos os itens de um cliente

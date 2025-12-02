@@ -99,7 +99,7 @@ public class ProdutoBO {
         produtoDTO.setPreco(produto.getPreco());
         produtoDTO.setEstoque(produto.getEstoque());
         produtoDTO.setStatus(produto.isStatus());
-        produtoDTO.setAdminId(4);
+        produtoDTO.setAdminId(2);
         produtoDTO.setCriadoEm(produto.getCriadoEm());
         
         return produtoDTO;

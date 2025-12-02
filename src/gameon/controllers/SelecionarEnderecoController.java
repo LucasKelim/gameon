@@ -1,9 +1,14 @@
 package gameon.controllers;
 
+import gameon.metodosPagamento.Pix;
+import gameon.models.Carrinho;
 import gameon.models.Cliente;
 import gameon.models.Endereco;
+import gameon.models.Ordem;
 import gameon.models.Usuario;
+import gameon.models.BO.CarrinhoProdutoBO;
 import gameon.models.BO.EnderecoBO;
+import gameon.models.BO.OrdemBO;
 import gameon.utils.SessaoUsuario;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -149,16 +154,37 @@ public class SelecionarEnderecoController {
         Endereco enderecoSelecionado = (Endereco) selected.getUserData();
         SessaoUsuario.getInstancia().setEnderecoSelecionado(enderecoSelecionado);
         
+        Usuario usuario = SessaoUsuario.getInstancia().getUsuarioLogado();
+        
         System.out.println("Endereço selecionado: " + enderecoSelecionado.getLogradouro());
+        
+        CarrinhoProdutoBO carrinhoProdutoDTO = new CarrinhoProdutoBO();
+        Carrinho carrinho = carrinhoProdutoDTO.procurarPorCliente(usuario.getId());
+        
+        
+        OrdemBO ordemBO = new OrdemBO();
+        Ordem ordem = new Ordem();
+        ordem.setMetodoPagamento(new Pix());
+        ordem.setValorTotal(carrinho.getValorTotal());
+        ordem.setEndereco(enderecoSelecionado);
+        
+        ordem = ordemBO.inserir(ordem);
+        
+        System.out.println("Ordme criada: " + ordem);
         
         // Vai para tela de pagamento
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gameon/views/PagamentoPix.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) vboxEnderecos.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("GameOn - Pagamento com PIX");
-            stage.centerOnScreen();
+        	FXMLLoader loader = new FXMLLoader(getClass().getResource("/gameon/views/PagamentoPix.fxml"));
+        	Parent root = loader.load();
+
+        	PagamentoPixController controller = loader.getController();
+
+        	controller.setOrdem(ordem);
+
+        	Stage stage = (Stage) vboxEnderecos.getScene().getWindow();
+        	stage.setScene(new Scene(root));
+        	stage.setTitle("GameOn - Pagamento com PIX");
+        	stage.centerOnScreen();
         } catch (Exception e) {
             e.printStackTrace();
             lblMensagem.setText("Erro ao abrir pagamento: " + e.getMessage());

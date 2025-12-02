@@ -20,4 +20,9 @@ public class Asaas {
     	return new AsaasClient().delete(modelo);
     }
     
+    public static Map<String, Object> procurarPix(String modelo) {
+    	String m = modelo + "/pixQrCode";
+    	return new AsaasClient().get(m);
+    }
+    
 }

@@ -4,12 +4,12 @@ import gameon.models.CarrinhoProduto;
 import gameon.models.Cliente;
 import gameon.models.Endereco;
 import gameon.models.Ordem;
+import gameon.models.Pix;
 import gameon.models.Usuario;
 import gameon.models.BO.CarrinhoProdutoBO;
 import gameon.models.BO.OrdemBO;
 import gameon.models.BO.OrdemProdutoBO;
 import gameon.models.enums.OrdemStatus;
-import gameon.metodosPagamento.Pix;
 import gameon.utils.SessaoUsuario;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -40,11 +40,17 @@ public class PagamentoPixController {
     private CarrinhoProdutoBO carrinhoProdutoBO = new CarrinhoProdutoBO();
     private OrdemProdutoBO ordemProdutoBO = new OrdemProdutoBO();
     private DecimalFormat df = new DecimalFormat("R$ #,##0.00");
+    
+    private Ordem ordem;
 
     @FXML
     public void initialize() {
         System.out.println("PagamentoPixController inicializado");
-        carregarInformacoesPagamento();
+    }
+    
+    public void setOrdem(Ordem ordem) {
+    	this.ordem = ordem;
+    	carregarInformacoesPagamento();
     }
     
     private void carregarInformacoesPagamento() {
@@ -76,12 +82,19 @@ public class PagamentoPixController {
             // Mostra valor
             lblValor.setText(df.format(total));
             
+            OrdemBO ordemBO = new OrdemBO();
+            System.out.println(ordem);
+            Pix pix = ordemBO.procurarPix(ordem.getId());
+            
+            System.out.println("Pix gerado: " + pix);
+            
             // Gera chave PIX (simulação)
             String chavePix = gerarChavePix(cliente, total);
             lblChavePix.setText(chavePix);
             
             // Tenta carregar QR Code (opcional)
             try {
+            	
                 // Cria um QR code simples programaticamente (ou use uma imagem placeholder)
                 // Se tiver uma imagem em resources, use:
                 // Image qrCodeImage = new Image(getClass().getResourceAsStream("/gameon/images/qrcode.png"));
@@ -212,41 +225,41 @@ public class PagamentoPixController {
     
     private Ordem criarOrdem() {
         try {
-            SessaoUsuario sessao = SessaoUsuario.getInstancia();
-            
-            Ordem ordem = new Ordem();
-            ordem.setStatus(OrdemStatus.PENDENTE);
-            ordem.setMetodoPagamento(new Pix());
-            ordem.setValorTotal(sessao.getTotalCarrinho());
-            ordem.setEndereco(sessao.getEnderecoSelecionado());
-            
-            // Salva no banco
+//            SessaoUsuario sessao = SessaoUsuario.getInstancia();
+//            
+//            Ordem ordem = new Ordem();
+//            ordem.setStatus(OrdemStatus.PENDENTE);
+//            ordem.setMetodoPagamento(new Pix());
+//            ordem.setValorTotal(sessao.getTotalCarrinho());
+//            ordem.setEndereco(sessao.getEnderecoSelecionado());
+//            
+//            // Salva no banco
             Ordem ordemSalva = ordemBO.inserir(ordem);
-            
-            if (ordemSalva != null) {
-                System.out.println("Ordem salva no banco: ID=" + ordemSalva.getId());
-                
-                // Pega itens do carrinho do cliente atual
-                Usuario usuario = sessao.getUsuarioLogado();
-                if (usuario instanceof Cliente) {
-                    Cliente cliente = (Cliente) usuario;
-                    List<CarrinhoProduto> itensCarrinho = getItensCarrinhoCliente(cliente.getId());
-                    
-                    if (itensCarrinho != null && !itensCarrinho.isEmpty()) {
-                        // Salva os itens da ordem
-                        boolean itensSalvos = ordemProdutoBO.inserirItensDaOrdem(
-                            ordemSalva.getId(), itensCarrinho);
-                        
-                        if (itensSalvos) {
-                            System.out.println(itensCarrinho.size() + " itens salvos na ordem");
-                        } else {
-                            System.out.println("Aviso: Não foi possível salvar todos os itens da ordem");
-                        }
-                    } else {
-                        System.out.println("Aviso: Carrinho vazio ao criar ordem");
-                    }
-                }
-            }
+//            
+//            if (ordemSalva != null) {
+//                System.out.println("Ordem salva no banco: ID=" + ordemSalva.getId());
+//                
+//                // Pega itens do carrinho do cliente atual
+//                Usuario usuario = sessao.getUsuarioLogado();
+//                if (usuario instanceof Cliente) {
+//                    Cliente cliente = (Cliente) usuario;
+//                    List<CarrinhoProduto> itensCarrinho = getItensCarrinhoCliente(cliente.getId());
+//                    
+//                    if (itensCarrinho != null && !itensCarrinho.isEmpty()) {
+//                        // Salva os itens da ordem
+//                        boolean itensSalvos = ordemProdutoBO.inserirItensDaOrdem(
+//                            ordemSalva.getId(), itensCarrinho);
+//                        
+//                        if (itensSalvos) {
+//                            System.out.println(itensCarrinho.size() + " itens salvos na ordem");
+//                        } else {
+//                            System.out.println("Aviso: Não foi possível salvar todos os itens da ordem");
+//                        }
+//                    } else {
+//                        System.out.println("Aviso: Carrinho vazio ao criar ordem");
+//                    }
+//                }
+//            }
             
             return ordemSalva;
             

@@ -9,6 +9,7 @@ import java.util.Map;
 import gameon.factories.MetodoPagamentoFactory;
 import gameon.models.Endereco;
 import gameon.models.Ordem;
+import gameon.models.Pix;
 import gameon.models.DAO.OrdemDAO;
 import gameon.models.DTO.OrdemDTO;
 import gameon.models.enums.OrdemStatus;
@@ -71,6 +72,23 @@ public class OrdemBO {
         OrdemDTO ordemDTO = ordemDAO.procurarPorId(ordemId);
         
         return toModel(ordemDTO);
+    }
+    
+    public Pix procurarPix(int ordemId) {
+    	OrdemDTO ordemDTO = ordemDAO.procurarPorId(ordemId);
+    	
+    	Ordem ordem = toModel(ordemDTO);
+    	
+    	Map<String, Object> res = Asaas.inserir(
+			buildAsaasUrl(ordem),
+			buildAsaasPayload(ordem)
+		);
+    	
+        if (res == null || !res.containsKey("encodedImage")) {
+            return null;
+        }
+    	
+    	return toPix(res);
     }
 	
 	public boolean existe(Ordem ordem) {
@@ -144,5 +162,16 @@ public class OrdemBO {
         ordemDTO.setCriadoEm(ordem.getCriadoEm());
         
         return ordemDTO;
+    }
+    
+    private Pix toPix(Map<String, Object> res) {
+    	Pix pix = new Pix(
+			res.get("encodedImage").toString(),
+			res.get("payload").toString(),
+			res.get("expirationDate").toString(),
+			res.get("description").toString()
+		);
+    	
+    	return pix;
     }
 }
