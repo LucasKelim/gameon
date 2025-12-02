@@ -91,8 +91,8 @@ public class CarrinhoProdutoDAO {
     }
     
     public boolean excluir(int produtoId, int clienteId) {
-    	String sql = "DELETE FROM " + NOMEDATABELA + " WHERE produtoId = ? AND clienteId = ?;";
-    	
+        String sql = "DELETE FROM " + NOMEDATABELA + " WHERE produtoId = ? AND clienteId = ?;";
+        
         try {
             Connection conn = Conexao.conectar();
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -219,6 +219,28 @@ public class CarrinhoProdutoDAO {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+    
+ // No CarrinhoProdutoDAO.java
+    public boolean excluirPorCliente(int clienteId) {
+        String sql = "DELETE FROM " + NOMEDATABELA + " WHERE clienteId = ?;";
+        
+        try {
+            Connection conn = Conexao.conectar();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            
+            ps.setInt(1, clienteId);
+            
+            ps.executeUpdate();
+            
+            ps.close();
+            conn.close();
+            
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }

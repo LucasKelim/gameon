@@ -14,8 +14,8 @@ public class EnderecoDAO {
     final String NOMEDATABELA = "endereco";
     
     public EnderecoDTO inserir(EnderecoDTO endereco) {
-    	String sql = "INSERT INTO " + NOMEDATABELA + " (logradouro, numero, bairro, cidade, cep, estado, clienteId) VALUES (?, ?, ?, ?, ?, ?, ?);";
-    	
+        String sql = "INSERT INTO " + NOMEDATABELA + " (logradouro, numero, bairro, cidade, cep, estado, clienteId) VALUES (?, ?, ?, ?, ?, ?, ?);";
+        
         try {
             Connection conn = Conexao.conectar();
             PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
@@ -24,20 +24,36 @@ public class EnderecoDAO {
             ps.setInt(2, endereco.getNumero());
             ps.setString(3, endereco.getBairro());
             ps.setString(4, endereco.getCidade());
-            ps.setString(5, endereco.getCodigoPostal());
+            ps.setString(5, endereco.getCodigoPostal()); // ← CORRETO: cep no banco = codigoPostal no DTO
             ps.setString(6, endereco.getEstado());
             ps.setInt(7, endereco.getClienteId());
 
-        	int rows = ps.executeUpdate();
+            System.out.println("DEBUG: Executando INSERT endereço: " + sql);
+            System.out.println("DEBUG: Valores: " + 
+                endereco.getLogradouro() + ", " + 
+                endereco.getNumero() + ", " + 
+                endereco.getBairro() + ", " + 
+                endereco.getCidade() + ", " + 
+                endereco.getCodigoPostal() + ", " + 
+                endereco.getEstado() + ", " + 
+                endereco.getClienteId());
+
+            int rows = ps.executeUpdate();
+            
+            System.out.println("DEBUG: Rows affected: " + rows);
             
             if (rows == 0) {
-            	return null;
+                System.out.println("DEBUG: Nenhuma linha afetada no INSERT");
+                return null;
             }
             
             ResultSet rs = ps.getGeneratedKeys();
             
             if (rs.next()) {
-            	endereco.setId(rs.getInt(1));
+                endereco.setId(rs.getInt(1));
+                System.out.println("DEBUG: Endereço inserido com ID: " + endereco.getId());
+            } else {
+                System.out.println("DEBUG: Nenhuma chave gerada");
             }
             
             ps.close();
@@ -47,6 +63,7 @@ public class EnderecoDAO {
             return procurarPorId(endereco.getId());
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println("DEBUG: Exception no inserir endereço: " + e.getMessage());
             return null;
         }
     }
@@ -64,7 +81,7 @@ public class EnderecoDAO {
             ps.setString(4, endereco.getCidade());
             ps.setString(5, endereco.getCodigoPostal());
             ps.setString(6, endereco.getEstado());
-            ps.setInt(8, endereco.getId());
+            ps.setInt(7, endereco.getId());
             
             ps.executeUpdate();
             
@@ -227,11 +244,16 @@ public class EnderecoDAO {
             endereco.setLogradouro(rs.getString("logradouro"));
             endereco.setNumero(rs.getInt("numero"));
             endereco.setBairro(rs.getString("bairro"));
-            endereco.setCodigoPostal(rs.getString("cep"));
             endereco.setCidade(rs.getString("cidade"));
             endereco.setEstado(rs.getString("estado"));
+            
+            // CORREÇÃO AQUI: Use "cep" que é o nome da coluna no banco
+            endereco.setCodigoPostal(rs.getString("cep"));
+            
             endereco.setClienteId(rs.getInt("clienteId"));
             endereco.setCriadoEm(timestamp.toLocalDateTime());
+            
+            System.out.println("DEBUG: Endereço montado: " + endereco);
             
             return endereco;
         } catch (Exception e) {

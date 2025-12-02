@@ -1,6 +1,8 @@
 package gameon.controllers;
 
+import gameon.models.Cliente;  // ← ADICIONE ESTE IMPORT
 import gameon.models.Usuario;
+import gameon.models.BO.ClienteBO;  // ← ADICIONE ESTE IMPORT
 import gameon.models.BO.UsuarioBO;
 import gameon.utils.SessaoUsuario;
 import javafx.fxml.FXML;
@@ -18,6 +20,7 @@ public class LoginController {
     @FXML private PasswordField txtSenha;
     @FXML private Label lblMensagem;
 
+    @FXML
     public void fazerLogin() {
         String email = txtEmail.getText();
         String senha = txtSenha.getText();
@@ -27,24 +30,34 @@ public class LoginController {
             return;
         }
 
-        UsuarioBO usuarioBO = new UsuarioBO();
-        
-        Usuario usuarioEncontrado = usuarioBO.procurarPorEmail(email);
+        // BUSCA COMO CLIENTE
+        ClienteBO clienteBO = new ClienteBO();
+        Cliente clienteEncontrado = clienteBO.procurarPorEmail(email);
 
-        if (usuarioEncontrado != null && 
-            usuarioBO.verificarSenha(senha, usuarioEncontrado.getSenha().getValor())) {
-            
-            SessaoUsuario.getInstancia().setUsuarioLogado(usuarioEncontrado);
-            
-            lblMensagem.setStyle("-fx-text-fill: green;");
-            lblMensagem.setText("Sucesso! Entrando...");
-            
-            irParaCatalogo();
-            
-        } else {
+        if (clienteEncontrado == null) {
+            lblMensagem.setStyle("-fx-text-fill: red;");
+            lblMensagem.setText("Cliente não encontrado.");
+            return;
+        }
+
+        // Verifica senha
+        UsuarioBO usuarioBO = new UsuarioBO();
+        if (!usuarioBO.verificarSenha(senha, clienteEncontrado.getSenha().getValor())) {
             lblMensagem.setStyle("-fx-text-fill: red;");
             lblMensagem.setText("Email ou senha incorretos.");
+            return;
         }
+
+        // SALVA CLIENTE NA SESSÃO
+        System.out.println("LOGIN: Cliente " + clienteEncontrado.getNome() + 
+                          " (ID: " + clienteEncontrado.getId() + ") logado");
+        
+        SessaoUsuario.getInstancia().setUsuarioLogado(clienteEncontrado);
+        
+        lblMensagem.setStyle("-fx-text-fill: green;");
+        lblMensagem.setText("Sucesso! Entrando...");
+        
+        irParaCatalogo();
     }
 
     private void irParaCatalogo() {
