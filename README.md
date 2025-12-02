@@ -82,7 +82,7 @@ create table carrinho_produto (
 
 create table ordem (
 	id int unsigned primary key auto_increment,
-    status enum('PENDENTE', 'PAGO', 'ENVIADO', 'ENTREGUE', 'CANCELADO') not null default 'PENDENTE',
+    status enum('PENDENTE', 'PAGO', 'ENVIADO', 'ENTREGUE', 'CANCELADO') default 'PENDENTE',
     metodoPagamento varchar(255) not null,
     valorTotal double not null,
     enderecoId int unsigned not null,
